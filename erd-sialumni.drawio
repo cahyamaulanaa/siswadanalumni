@@ -1,0 +1,64 @@
+<mxfile host="app.diagrams.net" agent="GitHub Copilot">
+  <diagram id="erd-sialumni" name="ERD SIA Alumni">
+    <mxGraphModel dx="1813" dy="1803" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="cabang" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" value="cabang&#xa;PK id&#xa;nama&#xa;kota&#xa;alamat&#xa;telepon" vertex="1">
+          <mxGeometry height="150" width="180" x="100" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="users" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" value="users&#xa;PK id&#xa;nama&#xa;email&#xa;password&#xa;role&#xa;FK cabang_id&#xa;deleted_at" vertex="1">
+          <mxGeometry height="170" width="180" x="250" y="-20" as="geometry" />
+        </mxCell>
+        <mxCell id="angkatan" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" value="angkatan&#xa;PK id&#xa;FK cabang_id&#xa;nama&#xa;tahun" vertex="1">
+          <mxGeometry height="120" width="180" x="460" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="sesi_kelas" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" value="sesi_kelas&#xa;PK id&#xa;FK cabang_id&#xa;FK angkatan_id&#xa;nama&#xa;tanggal_mulai&#xa;tanggal_selesai&#xa;dibuat_oleh" vertex="1">
+          <mxGeometry height="160" width="220" x="1000" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="siswa" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;arcSize=19;" value="siswa&#xa;PK id&#xa;FK cabang_id&#xa;angkatan_text&#xa;nama_lengkap&#xa;asal_sekolah&#xa;tanggal_lahir&#xa;no_hp&#xa;alamat&#xa;email&#xa;informasi_villa_merah&#xa;foto&#xa;tahun_masuk&#xa;tahun_lulus&#xa;kelas&#xa;deleted_at" vertex="1">
+          <mxGeometry height="320" width="220" x="630" y="-80" as="geometry" />
+        </mxCell>
+        <mxCell id="alumni" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" value="alumni&#xa;PK id&#xa;FK siswa_id&#xa;ptn_diterima&#xa;jurusan&#xa;jalur_masuk&#xa;tahun_diterima&#xa;testimoni" vertex="1">
+          <mxGeometry height="150" width="200" x="1060" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="kategori_program" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;" value="kategori_program&#xa;PK id&#xa;nama" vertex="1">
+          <mxGeometry height="100" width="180" x="80" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="program" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;" value="program&#xa;PK id&#xa;FK kategori_program_id&#xa;nama&#xa;deskripsi" vertex="1">
+          <mxGeometry height="120" width="200" x="340" y="610" as="geometry" />
+        </mxCell>
+        <mxCell id="siswa_program" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;" value="siswa_program&#xa;FK siswa_id&#xa;FK program_id&#xa;created_at&#xa;updated_at" vertex="1">
+          <mxGeometry height="120" width="220" x="720" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_cabang_users" edge="1" parent="1" source="cabang" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERoneToMany;strokeColor=#666666;" target="users" value="1..*">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_cabang_angkatan" edge="1" parent="1" source="cabang" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERoneToMany;strokeColor=#666666;" target="angkatan" value="1..*">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_cabang_siswa" edge="1" parent="1" source="cabang" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERoneToMany;strokeColor=#666666;" target="siswa" value="1..*">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_cabang_sesi" edge="1" parent="1" source="cabang" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERoneToMany;strokeColor=#666666;" target="sesi_kelas" value="1..*">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_angkatan_sesi" edge="1" parent="1" source="angkatan" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERoneToMany;strokeColor=#666666;" target="sesi_kelas" value="1..*">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_siswa_alumni" edge="1" parent="1" source="siswa" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERoneToOne;strokeColor=#666666;" target="alumni" value="1..0,1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_kategori_program" edge="1" parent="1" source="kategori_program" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERoneToMany;strokeColor=#666666;" target="program" value="1..*">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_siswa_program_siswa" edge="1" parent="1" source="siswa" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmanyToMany;strokeColor=#666666;" target="siswa_program" value="1..*">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_siswa_program_program" edge="1" parent="1" source="program" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmanyToMany;strokeColor=#666666;" target="siswa_program" value="1..*">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

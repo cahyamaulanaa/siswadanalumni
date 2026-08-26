@@ -1,0 +1,16 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Models\Alumni;
+use App\Models\Program;
+use App\Models\Siswa;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+
+class StatistikController extends Controller
+{
+    // placeholder to avoid accidental overwrite
+}

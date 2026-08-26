@@ -1,0 +1,359 @@
+/* Login Page Styles */
+
+:root {
+  --color-slate-900: rgb(0 61 130);
+  --color-purple-900: rgb(0 76 153);
+  --color-blue-600: rgb(59 130 246);
+  --color-blue-700: rgb(37 99 235);
+  --color-purple-600: rgb(37 99 235);
+  --color-white: rgb(255 255 255);
+  --color-gray-300: rgb(209 213 219);
+  --color-gray-400: rgb(156 163 175);
+}
+
+.loginContainer {
+  min-height: 100vh;
+  background: linear-gradient(135deg, rgb(0 61 130) 0%, rgb(0 76 153) 50%, rgb(0 61 130) 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.blobContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  mix-blend-mode: multiply;
+  filter: blur(3rem);
+  opacity: 0.2;
+  animation: blob 7s infinite;
+}
+
+.blob1 {
+  width: 18rem;
+  height: 18rem;
+  background: rgb(0 61 130);
+  top: 0;
+  left: -1rem;
+  animation-delay: 0s;
+}
+
+.blob2 {
+  width: 18rem;
+  height: 18rem;
+  background: rgb(59 130 246);
+  top: 0;
+  right: -1rem;
+  animation-delay: 2s;
+}
+
+.blob3 {
+  width: 18rem;
+  height: 18rem;
+  background: rgb(59 130 246);
+  bottom: -2rem;
+  left: 5rem;
+  animation-delay: 4s;
+}
+
+@keyframes blob {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+}
+
+.cardWrapper {
+  width: 100%;
+  max-width: 28rem;
+  position: relative;
+  z-index: 10;
+}
+
+.card {
+  backdrop-filter: blur(0.625rem);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.logoSection {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.logoBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgb(96 165 250) 0%, rgb(168 85 247) 100%);
+  margin-bottom: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  font-size: 1.5rem;
+}
+
+.logoImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--color-white);
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.025em;
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  color: var(--color-white);
+  font-weight: 300;
+}
+
+.brandSubtitle {
+  font-size: 0.8rem;
+  color: var(--color-white);
+  font-weight: 500;
+  margin: 0.35rem 0 0;
+}
+
+.divider {
+  width: 3rem;
+  height: 0.25rem;
+  background: linear-gradient(90deg, rgb(96 165 250) 0%, rgb(168 85 247) 100%);
+  border-radius: 9999px;
+  margin: 0.75rem auto;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0.75rem;
+}
+
+.inputWrapper {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.inputWrapper.focused {
+  transform: scale(1.05);
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 1.25rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  color: var(--color-white);
+  font-family: inherit;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.input::placeholder {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgb(96 165 250);
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+}
+
+.inputIcon {
+  position: absolute;
+  right: 1rem;
+  top: 0.75rem;
+  font-size: 1.125rem;
+}
+
+.submitButton {
+  background: linear-gradient(135deg, rgb(59 130 246) 0%, rgb(168 85 247) 100%);
+  color: var(--color-white);
+  font-weight: 600;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.submitButton:hover:not(:disabled) {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+  background: linear-gradient(135deg, rgb(37 99 235) 0%, rgb(147 51 234) 100%);
+}
+
+.submitButton:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.submitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.errorAlert {
+  padding: 1rem;
+  background: rgba(239 68 68, 0.2);
+  border: 1px solid rgba(244, 63, 94, 0.5);
+  color: rgb(254 202 202);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  backdrop-filter: blur(0.625rem);
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.credentialsDivider {
+  margin: 2rem 0;
+  position: relative;
+}
+
+.credentialsDividerLine {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+}
+
+.credentialsDividerLine::before {
+  content: '';
+  width: 100%;
+  height: 1px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.credentialsDividerText {
+  position: relative;
+  text-align: center;
+  font-size: 0.75rem;
+  color: rgb(107 114 128);
+  background: linear-gradient(135deg, var(--color-slate-900), var(--color-purple-900), var(--color-slate-900));
+  padding: 0 0.75rem;
+  z-index: 1;
+}
+
+.credentialsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.credentialCard {
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  cursor: help;
+}
+
+.credentialCard:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.credentialRole {
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.credentialEmail,
+.credentialPassword {
+  font-size: 0.75rem;
+  color: var(--color-white);
+  margin-left: 1.25rem;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.credentialPassword {
+  color: var(--color-white);
+}
+
+.superAdminRole,
+.adminRole,
+.teacherRole,
+.credentialRole {
+  color: var(--color-white);
+}
+
+.footer {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.footerText {
+  font-size: 0.75rem;
+  color: var(--color-white);
+}
+
+.bottomText {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 0.75rem;
+  color: var(--color-white);
+}
