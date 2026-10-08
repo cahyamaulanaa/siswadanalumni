@@ -54,7 +54,7 @@
 }
 
 .title {
-  font-size: 2.25rem;
+  font-size: 1.50rem;
   font-weight: 700;
   color: rgb(0 61 130);
   margin: 0 0 0.5rem 0;
@@ -237,6 +237,20 @@
 .cardIcon {
   font-size: 1.75rem;
 }
+
+.cardIconBlue { color: rgb(37 99 235); }
+.cardIconGreen { color: rgb(5 150 105); }
+.cardIconAmber { color: rgb(217 119 6); }
+
+.chartTitleIcon {
+  width: 1.1rem;
+  margin-right: 0.35rem;
+}
+
+.iconBlue { color: rgb(37 99 235); }
+.iconGreen { color: rgb(5 150 105); }
+.iconAmber { color: rgb(217 119 6); }
+.iconTeal { color: rgb(13 148 136); }
 
 .cardLabel {
   font-size: 0.875rem;

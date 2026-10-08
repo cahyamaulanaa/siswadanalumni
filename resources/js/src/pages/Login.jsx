@@ -47,7 +47,7 @@ export const Login = () => {
                         <div className={styles.logoBadge}>
                             <img src="/logo-villa-merah.png.png" alt="Logo Bimbel Gambar Villa Merah" className={styles.logoImage} />
                         </div>
-                        <h1 className={styles.title}>SISA</h1>
+                        <h1 className={styles.title}></h1>
                         <p className={styles.subtitle}>
                             Sistem Informasi Siswa & Alumni
                         </p>
@@ -122,7 +122,7 @@ export const Login = () => {
                     {/* Footer */}
                     <div className={styles.footer}>
                         <p className={styles.footerText}>
-                            © 2026 SISA - Sistem Informasi Siswa & Alumni
+                            © 2026 - Sistem Informasi Siswa & Alumni
                         </p>
                     </div>
                 </div>

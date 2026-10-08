@@ -16,6 +16,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.75rem;
   margin-bottom: 2rem;
   padding: 1.5rem;
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(96, 165, 250, 0.1) 100%);
@@ -25,11 +26,42 @@
 }
 
 .title {
-  font-size: 2.25rem;
+  flex: 0 0 auto;
+  min-width: 250px;
+  font-size: 1.5rem;
   font-weight: 700;
   color: rgb(0 61 130);
   margin: 0;
   letter-spacing: -0.025em;
+  white-space: nowrap;
+}
+
+.titleBulk {
+  min-width: 145px;
+  max-width: 175px;
+  white-space: normal;
+  line-height: 1.15;
+  font-size: 1.3rem;
+}
+
+.actionBar {
+  display: flex;
+  flex: 0 1 auto;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.2rem;
+  min-width: 0;
+  margin-left: auto;
+}
+
+.actionButton {
+  flex: 0 0 auto;
+  min-height: 34px;
+  padding: 0.35rem 0.45rem;
+  font-size: 0.65rem;
+  gap: 0.2rem;
+  white-space: nowrap;
 }
 
 .addButton {
@@ -223,6 +255,110 @@
   transition: all 0.3s ease;
 }
 
+.direksiTable .table th:nth-child(2),
+.direksiTable .table td:nth-child(2) {
+  width: 19%;
+  min-width: 190px;
+  padding-left: 0.8rem;
+  padding-right: 0.8rem;
+  white-space: normal;
+  line-height: 1.4;
+  max-width: 190px;
+}
+
+.direksiTable .table th:nth-child(3),
+.direksiTable .table td:nth-child(3) {
+  width: 14%;
+  min-width: 140px;
+  white-space: normal;
+  line-height: 1.4;
+  max-width: 140px;
+}
+
+.direksiTable .table th:nth-child(4),
+.direksiTable .table td:nth-child(4) {
+  width: 14%;
+  min-width: 120px;
+}
+
+.direksiTable .table th:nth-child(5),
+.direksiTable .table td:nth-child(5) {
+  width: 10%;
+  min-width: 90px;
+}
+
+.direksiTable .table th:nth-child(6),
+.direksiTable .table td:nth-child(6) {
+  width: 14%;
+  min-width: 130px;
+}
+
+.direksiTable .table th:nth-child(7),
+.direksiTable .table td:nth-child(7) {
+  width: 14%;
+  min-width: 130px;
+}
+
+.direksiTable .table th:nth-child(8),
+.direksiTable .table td:nth-child(8) {
+  width: 11%;
+  min-width: 100px;
+}
+
+.direksiTable .table th:nth-child(9),
+.direksiTable .table td:nth-child(9) {
+  width: 8%;
+  min-width: 68px;
+}
+
+.direksiTable .table th:nth-child(10),
+.direksiTable .table td:nth-child(10) {
+  width: 9%;
+  min-width: 75px;
+}
+
+.direksiTable .table th:nth-child(11),
+.direksiTable .table td:nth-child(11) {
+  width: 80px;
+  min-width: 80px;
+}
+
+.superAdminAlumniTable .table th:nth-child(3),
+.superAdminAlumniTable .table td:nth-child(3) {
+  width: 18%;
+  min-width: 170px;
+}
+
+.superAdminAlumniTable .table th:nth-child(4),
+.superAdminAlumniTable .table td:nth-child(4) {
+  width: 20%;
+  min-width: 200px;
+}
+
+.superAdminAlumniTable .table th:nth-child(7),
+.superAdminAlumniTable .table td:nth-child(7) {
+  width: 16%;
+  min-width: 150px;
+}
+
+.adminCabangAlumniTable .table th:nth-child(3),
+.adminCabangAlumniTable .table td:nth-child(3) {
+  width: 18%;
+  min-width: 170px;
+}
+
+.adminCabangAlumniTable .table th:nth-child(4),
+.adminCabangAlumniTable .table td:nth-child(4) {
+  width: 20%;
+  min-width: 200px;
+}
+
+.adminCabangAlumniTable .table th:nth-child(7),
+.adminCabangAlumniTable .table td:nth-child(7) {
+  width: 16%;
+  min-width: 150px;
+}
+
 .tableCard:hover {
   box-shadow: 0 12px 24px rgba(59, 130, 246, 0.12);
 }
@@ -292,7 +428,7 @@
 }
 
 .tableHeadCell {
-  padding: 0.55rem 0.65rem;
+  padding: 0.8rem 0.9rem;
   text-align: left;
   font-size: 0.8rem;
   font-weight: 600;
@@ -302,6 +438,7 @@
   white-space: normal;
   overflow: hidden;
   text-overflow: ellipsis;
+  vertical-align: middle;
 }
 
 .tableHeadCell:first-child {
@@ -340,26 +477,36 @@
 }
 
 .tableCell {
-  padding: 0.45rem 0.5rem;
+  padding: 0.75rem 0.8rem;
   font-size: 0.85rem;
   color: rgb(15 23 42);
   white-space: normal;
   word-break: break-word;
-  vertical-align: top;
+  vertical-align: middle;
+  line-height: 1.5;
+}
+
+.table th:nth-child(3),
+.table td:nth-child(3) {
+  min-width: 260px;
+  width: 24%;
+  padding-left: 1.1rem;
+  padding-right: 1.1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Column width helpers to keep table tidy */
-.table th:nth-child(1), .table td:nth-child(1) { width: 48px; min-width: 40px; }
-.table th:nth-child(2), .table td:nth-child(2) { width: 56px; min-width: 48px; }
-.table th:nth-child(3), .table td:nth-child(3) { width: 14%; min-width: 120px; }
-.table th:nth-child(4), .table td:nth-child(4) { width: 16%; min-width: 120px; }
-.table th:nth-child(5), .table td:nth-child(5) { width: 16%; min-width: 120px; }
-.table th:nth-child(6), .table td:nth-child(6) { width: 12%; min-width: 100px; }
-.table th:nth-child(7), .table td:nth-child(7) { width: 14%; min-width: 120px; }
-.table th:nth-child(8), .table td:nth-child(8) { width: 11%; min-width: 100px; }
-.table th:nth-child(9), .table td:nth-child(9) { width: 11%; min-width: 100px; }
-.table th:nth-child(10), .table td:nth-child(10) { width: 8%; min-width: 70px; }
-.table th:nth-child(11), .table td:nth-child(11) { width: 90px; min-width: 80px; }
+.table th:nth-child(1), .table td:nth-child(1) { width: 42px; min-width: 42px; }
+.table th:nth-child(2), .table td:nth-child(2) { width: 52px; min-width: 52px; }
+.table th:nth-child(3), .table td:nth-child(3) { width: 16%; min-width: 130px; white-space: nowrap; }
+.table th:nth-child(4), .table td:nth-child(4) { width: 6%; min-width: 62px; }
+.table th:nth-child(5), .table td:nth-child(5) { width: 13%; min-width: 110px; }
+.table th:nth-child(6), .table td:nth-child(6) { width: 11%; min-width: 100px; }
+.table th:nth-child(7), .table td:nth-child(7) { width: 20%; min-width: 150px; }
+.table th:nth-child(8), .table td:nth-child(8) { width: 13%; min-width: 90px; }
+.table th:nth-child(9), .table td:nth-child(9) { width: 100px; min-width: 90px; }
 
 /* Make action buttons compact and vertically centered */
 .tableCell .actionButtons { align-items: center; }
@@ -720,6 +867,171 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
+.portfolioModalOverlay {
+  background: rgba(5, 27, 58, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.portfolioModalContent {
+  max-width: 760px;
+  max-height: min(760px, 92vh);
+  border: 1px solid rgba(147, 197, 253, 0.35);
+  border-radius: 1.25rem;
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.3);
+}
+
+.portfolioModalHeader {
+  padding: 1.5rem 1.75rem;
+  background: linear-gradient(135deg, rgb(239 246 255) 0%, rgb(255 255 255) 70%);
+}
+
+.portfolioModalEyebrow {
+  margin: 0 0 0.35rem;
+  color: rgb(37 99 235);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.portfolioModalSubtitle {
+  margin: 0.35rem 0 0;
+  color: rgb(100 116 139);
+  font-size: 0.9rem;
+}
+
+.portfolioField {
+  gap: 0.6rem;
+}
+
+.portfolioField .label {
+  color: rgb(15 62 120);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.portfolioField .input {
+  min-height: 48px;
+  border-color: rgb(203 213 225);
+  border-radius: 0.7rem;
+  background: rgb(248 250 252);
+  color: rgb(15 62 120);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.portfolioField .input:focus {
+  background: white;
+  border-color: rgb(59 130 246);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+  outline: none;
+}
+
+.uploadField {
+  padding: 1rem;
+  border: 1px solid rgb(226 232 240);
+  border-radius: 0.85rem;
+  background: linear-gradient(135deg, rgb(248 250 252) 0%, rgb(239 246 255) 100%);
+}
+
+.uploadField .input[type='file'] {
+  padding: 0.65rem;
+  background: white;
+  border-style: dashed;
+  cursor: pointer;
+}
+
+.uploadHint {
+  color: rgb(100 116 139);
+  font-size: 0.78rem;
+}
+
+.portfolioModalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgb(226 232 240);
+}
+
+.portfolioCancelButton,
+.portfolioSubmitButton {
+  min-height: 46px;
+  padding: 0.7rem 1.2rem;
+  border-radius: 0.7rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.portfolioCancelButton {
+  border: 1px solid rgb(203 213 225);
+  background: white;
+  color: rgb(71 85 105);
+}
+
+.portfolioSubmitButton {
+  border: none;
+  background: linear-gradient(135deg, rgb(37 99 235) 0%, rgb(59 130 246) 100%);
+  color: white;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
+}
+
+.portfolioCancelButton:hover,
+.portfolioSubmitButton:hover {
+  transform: translateY(-1px);
+}
+
+.portfolioCancelButton:hover {
+  background: rgb(248 250 252);
+}
+
+.portfolioSubmitButton:hover {
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.32);
+}
+
+.portfolioSubmitButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+  transform: none;
+}
+
+.portfolioModalContent .modalScroll {
+  padding-bottom: 1.25rem;
+}
+
+.portfolioModalContent .modalForm {
+  gap: 1rem;
+}
+
+.portfolioModalContent .portfolioModalActions {
+  margin-bottom: 0.25rem;
+}
+
+@media (max-width: 640px) {
+  .portfolioModalContent {
+    max-height: 94vh;
+    border-radius: 1rem;
+  }
+
+  .portfolioModalHeader {
+    padding: 1.2rem;
+  }
+
+  .portfolioModalContent .modalScroll {
+    padding: 1.1rem 1.1rem 0;
+  }
+
+  .portfolioModalActions {
+    flex-direction: column-reverse;
+  }
+
+  .portfolioCancelButton,
+  .portfolioSubmitButton {
+    width: 100%;
+  }
+}
+
 .formTextarea {
   resize: vertical;
   min-height: 120px;
@@ -775,6 +1087,278 @@
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
+}
+
+.studentModalOverlay {
+  background: rgba(5, 27, 58, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.studentModalContent {
+  max-width: 880px;
+  max-height: min(860px, 94vh);
+  border: 1px solid rgba(147, 197, 253, 0.35);
+  border-radius: 1.25rem;
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.3);
+}
+
+.studentModalHeader {
+  padding: 1.5rem 1.75rem;
+  background: linear-gradient(135deg, rgb(239 246 255) 0%, rgb(255 255 255) 72%);
+}
+
+.studentModalEyebrow {
+  margin: 0 0 0.35rem;
+  color: rgb(37 99 235);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.studentModalSubtitle {
+  margin: 0.35rem 0 0;
+  color: rgb(100 116 139);
+  font-size: 0.9rem;
+}
+
+.studentModalContent .modalScroll {
+  padding: 1.5rem 1.75rem 1.5rem;
+}
+
+.studentModalContent .formGrid {
+  gap: 1.15rem 1.25rem;
+}
+
+.studentModalContent .formField {
+  gap: 0.55rem;
+}
+
+.studentModalContent .formInput {
+  min-height: 46px;
+  border-color: rgb(203 213 225);
+  border-radius: 0.7rem;
+  background: rgb(248 250 252);
+}
+
+.studentModalContent .formInput:focus {
+  background: white;
+  border-color: rgb(59 130 246);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+}
+
+.studentModalContent .formLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.studentModalContent .formLabel svg {
+  color: rgb(37 99 235);
+  width: 0.85rem;
+}
+
+.studentModalContent .formActions {
+  padding: 1rem 1.75rem 1.5rem;
+  gap: 0.85rem;
+}
+
+.studentModalContent .cancelBtn,
+.studentModalContent .submitBtn {
+  min-height: 46px;
+  padding: 0.7rem 1.25rem;
+  border-radius: 0.7rem;
+  font-size: 0.92rem;
+}
+
+.studentModalContent .submitBtn {
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
+}
+
+.alumniModalOverlay {
+  background: rgba(5, 27, 58, 0.72) !important;
+  backdrop-filter: blur(8px);
+}
+
+.alumniModalContent {
+  box-sizing: border-box;
+  padding: 2rem !important;
+  max-width: 680px !important;
+  max-height: 92vh !important;
+  border: 1px solid rgba(147, 197, 253, 0.35);
+  border-radius: 1.25rem !important;
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.3) !important;
+  overflow-y: auto;
+}
+
+.alumniModalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.alumniModalForm .formGroup {
+  gap: 0.55rem;
+}
+
+.alumniModalForm .label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.alumniModalForm .input {
+  min-height: 46px;
+  box-sizing: border-box;
+  border-color: rgb(203 213 225);
+  border-radius: 0.7rem;
+  background: rgb(248 250 252);
+}
+
+.alumniModalForm .input:focus {
+  background: white;
+  border-color: rgb(59 130 246);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+  outline: none;
+}
+
+.alumniDetailOverlay {
+  background: rgba(5, 27, 58, 0.72) !important;
+  backdrop-filter: blur(8px);
+}
+
+.alumniDetailContent {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 0 !important;
+  max-width: 760px !important;
+  max-height: 88vh !important;
+  border: 1px solid rgba(147, 197, 253, 0.35);
+  border-radius: 1.25rem !important;
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.3) !important;
+  overflow: hidden !important;
+}
+
+.alumniDetailHeader {
+  padding: 1.35rem 1.75rem;
+  margin-bottom: 0 !important;
+  border-bottom: 1px solid rgb(226 232 240);
+  background: linear-gradient(135deg, rgb(239 246 255) 0%, white 72%);
+}
+
+.alumniDetailHeader h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: rgb(15 62 120) !important;
+}
+
+.alumniDetailHeader h2 svg {
+  color: rgb(37 99 235);
+}
+
+.alumniDetailBody {
+  flex: 1;
+  min-height: 0;
+  padding: 1.5rem 1.75rem;
+  overflow-y: auto;
+  gap: 1rem !important;
+}
+
+.alumniDetailBody > div {
+  padding: 0.85rem 1rem;
+  border: 1px solid rgb(226 232 240);
+  border-radius: 0.75rem;
+  background: rgb(248 250 252);
+}
+
+.alumniDetailBody > div label {
+  color: rgb(100 116 139) !important;
+  margin-bottom: 0.35rem !important;
+  font-size: 0.78rem !important;
+  letter-spacing: 0.02em;
+}
+
+.alumniDetailBody > div p {
+  color: rgb(15 23 42);
+  line-height: 1.5;
+}
+
+.alumniDetailContent > button {
+  margin: 0 1.75rem 1.5rem !important;
+  width: calc(100% - 3.5rem) !important;
+  border-radius: 0.7rem !important;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.2);
+}
+
+@media (max-width: 640px) {
+  .alumniDetailContent {
+    max-height: 92vh !important;
+    border-radius: 1rem !important;
+  }
+
+  .alumniDetailHeader {
+    padding: 1.1rem 1.2rem;
+  }
+
+  .alumniDetailBody {
+    padding: 1.1rem 1.2rem;
+    gap: 0.8rem !important;
+  }
+
+  .alumniDetailContent > button {
+    margin: 0 1.2rem 1.2rem !important;
+    width: calc(100% - 2.4rem) !important;
+  }
+}
+
+.alumniModalForm h3 {
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.25rem !important;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid rgb(226 232 240);
+}
+
+@media (max-width: 640px) {
+  .alumniModalContent {
+    padding: 1.25rem !important;
+    max-height: 94vh !important;
+    border-radius: 1rem !important;
+  }
+
+  .alumniModalForm {
+    gap: 0.85rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .studentModalContent {
+    max-height: 94vh;
+    border-radius: 1rem;
+  }
+
+  .studentModalHeader {
+    padding: 1.2rem;
+  }
+
+  .studentModalContent .modalScroll {
+    padding: 1.1rem 1.1rem 1.25rem;
+  }
+
+  .studentModalContent .formGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .studentModalContent .formActions {
+    padding: 1rem 1.1rem 1.25rem;
+    flex-direction: column-reverse;
+  }
+
+  .studentModalContent .cancelBtn,
+  .studentModalContent .submitBtn {
+    width: 100%;
+  }
 }
 
 /* Detail Modal Styles */
@@ -934,6 +1518,89 @@
 .detailCloseMainBtn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.studentDetailOverlay {
+  background: rgba(5, 27, 58, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.studentDetailContent {
+  max-width: 980px;
+  max-height: 88vh;
+  border: 1px solid rgba(147, 197, 253, 0.35);
+  border-radius: 1.25rem;
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.3);
+  overflow: hidden;
+}
+
+.studentDetailHeader {
+  padding: 1.35rem 1.75rem;
+  border-bottom: 1px solid rgb(226 232 240);
+  background: linear-gradient(135deg, rgb(239 246 255) 0%, white 72%);
+}
+
+.studentDetailHeader h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: rgb(15 62 120);
+}
+
+.studentDetailHeader h2 svg {
+  color: rgb(37 99 235);
+}
+
+.studentDetailBody {
+  min-height: 0;
+  padding: 1.5rem 1.75rem;
+}
+
+.studentDetailBody .infoGrid {
+  gap: 1rem;
+}
+
+.studentDetailBody .infoCard {
+  padding: 1.1rem 1.2rem;
+  border: 1px solid rgb(226 232 240);
+  border-radius: 0.75rem;
+  background: rgb(248 250 252);
+}
+
+.studentDetailBody .infoLabel {
+  margin-bottom: 0.45rem;
+  color: rgb(100 116 139);
+  font-size: 0.78rem;
+}
+
+.studentDetailBody .infoValue {
+  color: rgb(15 23 42);
+  font-size: 1rem;
+}
+
+.studentDetailContent .detailFooter {
+  padding: 1rem 1.75rem 1.5rem;
+  border-top: 1px solid rgb(226 232 240);
+  background: linear-gradient(135deg, white 0%, rgb(239 246 255) 100%);
+}
+
+@media (max-width: 768px) {
+  .studentDetailContent {
+    max-height: 92vh;
+    border-radius: 1rem;
+  }
+
+  .studentDetailHeader {
+    padding: 1.1rem 1.2rem;
+  }
+
+  .studentDetailBody {
+    padding: 1.1rem 1.2rem;
+  }
+
+  .studentDetailContent .detailFooter {
+    padding: 1rem 1.2rem 1.2rem;
+  }
 }
 
 /* Responsive for Mobile */

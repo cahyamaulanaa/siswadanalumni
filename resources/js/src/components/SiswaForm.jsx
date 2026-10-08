@@ -9,6 +9,7 @@ export const SiswaForm = ({ onSubmit, initialData = null, onCancel }) => {
         asal_sekolah: '',
         no_hp: '',
         tanggal_lahir: '',
+        jenis_kelamin: '',
         alamat: '',
         email: '',
         program_id: [],
@@ -222,6 +223,21 @@ export const SiswaForm = ({ onSubmit, initialData = null, onCancel }) => {
                 </div>
 
                 <div className={styles.formGroup}>
+                    <label htmlFor="jenis_kelamin">Jenis Kelamin *</label>
+                    <select
+                        id="jenis_kelamin"
+                        name="jenis_kelamin"
+                        value={formData.jenis_kelamin}
+                        onChange={handleInputChange}
+                        required
+                    >
+                        <option value="">Pilih Jenis Kelamin</option>
+                        <option value="laki-laki">Laki-laki</option>
+                        <option value="perempuan">Perempuan</option>
+                    </select>
+                </div>
+
+                <div className={styles.formGroup}>
                     <label htmlFor="tahun_masuk">Tanggal Masuk (Tahun) *</label>
                     <input
                         type="number"
@@ -306,17 +322,6 @@ export const SiswaForm = ({ onSubmit, initialData = null, onCancel }) => {
                     </div>
                 </div>
             )}
-
-            <div className={styles.formGroup}>
-                <label htmlFor="foto">Foto Siswa</label>
-                <input
-                    type="file"
-                    id="foto"
-                    name="foto"
-                    accept="image/*"
-                    onChange={handleInputChange}
-                />
-            </div>
 
             <div className={styles.formActions}>
                 <button type="submit" disabled={loading} className={styles.submitBtn}>

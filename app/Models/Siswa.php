@@ -20,6 +20,7 @@ class Siswa extends Model
         'nama_lengkap',
         'asal_sekolah',
         'tanggal_lahir',
+        'jenis_kelamin',
         'no_hp',
         'provinsi_code',
         'kabupaten_code',

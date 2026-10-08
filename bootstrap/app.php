@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'check_role' => \App\Http\Middleware\CheckRole::class,
             'check_cabang_access' => \App\Http\Middleware\CheckCabangAccess::class,
+            'log_activity' => \App\Http\Middleware\LogActivity::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

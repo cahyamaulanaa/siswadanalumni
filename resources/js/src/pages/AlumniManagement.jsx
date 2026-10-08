@@ -2,11 +2,36 @@ import React, { useState, useEffect, useRef } from 'react';
 import { alumniService } from '../services/alumniService';
 import { useAuth } from '../hooks/useAuth';
 import api from '../services/api';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faGraduationCap,
+    faTrash,
+    faPlus,
+    faFileCsv,
+    faSearch,
+    faCalendarDays,
+    faCompass,
+    faEye,
+    faPen,
+    faChevronLeft,
+    faChevronRight,
+    faBookOpen,
+    faXmark,
+    faSchool,
+    faUserGraduate,
+    faBuilding,
+    faVenusMars,
+    faPhone,
+    faLocationDot,
+    faEnvelope,
+    faCircleInfo,
+} from '@fortawesome/free-solid-svg-icons';
 import styles from './SiswaManagement.module.css';
 
 export const AlumniManagement = () => {
     const { user } = useAuth();
     const canWrite = user && ['super_admin', 'admin_cabang'].includes(user.role);
+    const canExportCsv = user && !['staff_karyawan', 'pengajar'].includes(user.role);
     const [alumniList, setAlumniList] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -14,6 +39,7 @@ export const AlumniManagement = () => {
     const [editingId, setEditingId] = useState(null);
     const [siswaList, setSiswaList] = useState([]);
     const [statistics, setStatistics] = useState(null);
+    const [cabangList, setCabangList] = useState([]);
     
     const [formData, setFormData] = useState({
         siswa_id: '',
@@ -23,6 +49,7 @@ export const AlumniManagement = () => {
         kelas: '',
         asal_sekolah: '',
         tanggal_lahir: '',
+        jenis_kelamin: '',
         no_hp: '',
         alamat: '',
         email: '',
@@ -39,6 +66,7 @@ export const AlumniManagement = () => {
     });
 
     const [filters, setFilters] = useState({
+        cabang_id: '',
         nama_lengkap: '',
         tahun_diterima: '',
         jalur_masuk: '',
@@ -62,13 +90,16 @@ export const AlumniManagement = () => {
     useEffect(() => {
         if (user) {
             const userFilters = {
+                cabang_id: user.role === 'admin_cabang' ? user.cabang_id : '',
                 tahun_diterima: '',
                 jalur_masuk: '',
                 ptn_diterima: '',
+                status_kelulusan: '',
                 per_page: 10,
                 page: 1,
             };
             setFilters(userFilters);
+            fetchCabang();
             fetchAlumniWithFilters(userFilters);
             fetchSiswaData();
             fetchStatistics();
@@ -79,7 +110,7 @@ export const AlumniManagement = () => {
         if (user) {
             fetchAlumniWithFilters(filters);
         }
-    }, [filters.nama_lengkap, filters.tahun_diterima, filters.jalur_masuk, filters.ptn_diterima, filters.status_kelulusan, filters.page, filters.per_page]);
+    }, [filters.cabang_id, filters.nama_lengkap, filters.tahun_diterima, filters.jalur_masuk, filters.ptn_diterima, filters.status_kelulusan, filters.page, filters.per_page]);
 
     const fetchAlumniWithFilters = async (filtersToUse) => {
         try {
@@ -111,6 +142,17 @@ export const AlumniManagement = () => {
         }
     };
 
+    const fetchCabang = async () => {
+        try {
+            const response = await api.get('/siswa-data/cabang');
+            if (response.data.success) {
+                setCabangList(response.data.data || []);
+            }
+        } catch (err) {
+            console.error('Gagal memuat data cabang:', err);
+        }
+    };
+
     const fetchStatistics = async () => {
         try {
             const response = await alumniService.getStatistics();
@@ -121,6 +163,10 @@ export const AlumniManagement = () => {
             console.error('Error fetching statistics:', err);
         }
     };
+
+    const cabangOptions = user?.role === 'admin_cabang'
+        ? cabangList.filter((cabang) => String(cabang.id) === String(user.cabang_id))
+        : cabangList;
 
     const formatDateForInput = (dateValue) => {
         if (!dateValue) {
@@ -174,6 +220,7 @@ export const AlumniManagement = () => {
                     kelas: selectedSiswa.kelas || '',
                     asal_sekolah: selectedSiswa.asal_sekolah || '',
                     tanggal_lahir: formatDateForInput(selectedSiswa.tanggal_lahir),
+                    jenis_kelamin: selectedSiswa.jenis_kelamin || '',
                     no_hp: selectedSiswa.no_hp || '',
                     alamat: selectedSiswa.alamat || '',
                     email: selectedSiswa.email || '',
@@ -234,6 +281,7 @@ export const AlumniManagement = () => {
                 kelas: formData.kelas ? parseInt(formData.kelas) : null,
                 asal_sekolah: formData.asal_sekolah || null,
                 tanggal_lahir: formData.tanggal_lahir || null,
+                jenis_kelamin: formData.jenis_kelamin || null,
                 no_hp: formData.no_hp || null,
                 alamat: formData.alamat || null,
                 email: formData.email || null,
@@ -296,6 +344,7 @@ export const AlumniManagement = () => {
             kelas: '',
             asal_sekolah: '',
             tanggal_lahir: '',
+            jenis_kelamin: '',
             no_hp: '',
             alamat: '',
             email: '',
@@ -330,6 +379,7 @@ export const AlumniManagement = () => {
                     kelas: siswa.kelas || '',
                     asal_sekolah: siswa.asal_sekolah || '',
                     tanggal_lahir: formatDateForInput(siswa.tanggal_lahir),
+                    jenis_kelamin: siswa.jenis_kelamin || '',
                     no_hp: siswa.no_hp || '',
                     alamat: siswa.alamat || '',
                     email: siswa.email || '',
@@ -613,6 +663,11 @@ export const AlumniManagement = () => {
     };
 
     const handleExportCsv = async () => {
+        if (!canExportCsv) {
+            setError('Fitur export CSV tidak tersedia untuk role Staff Karyawan.');
+            return;
+        }
+
         try {
             setError(null);
             let page = 1;
@@ -689,19 +744,21 @@ export const AlumniManagement = () => {
                                 className={styles.deleteButton}
                                 style={{ background: 'linear-gradient(135deg, rgb(239 68 68) 0%, rgb(220 38 38) 100%)', color: 'white', border: 'none', padding: '0.75rem 1.5rem', borderRadius: '0.75rem', fontWeight: 600, fontSize: '1rem', cursor: 'pointer' }}
                             >
-                                🗑️ Hapus {selectedIds.length} ({selectedIds.length === alumniList.length ? 'semua' : 'terpilih'})
+                                <FontAwesomeIcon icon={faTrash} /> Hapus {selectedIds.length} ({selectedIds.length === alumniList.length ? 'semua' : 'terpilih'})
                             </button>
                         )}
-                        <button
-                            onClick={handleExportCsv}
-                            className={styles.secondaryButton}
-                            style={{ background: 'linear-gradient(135deg, rgb(59, 130, 246) 0%, rgb(96, 165, 250) 100%)', color: 'white', border: 'none', padding: '0.75rem 1.25rem', borderRadius: '0.75rem', fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer' }}
-                        >
-                            📄 Export CSV
-                        </button>
+                        {canExportCsv && (
+                            <button
+                                onClick={handleExportCsv}
+                                className={styles.secondaryButton}
+                                style={{ background: 'linear-gradient(135deg, rgb(59, 130, 246) 0%, rgb(96, 165, 250) 100%)', color: 'white', border: 'none', padding: '0.75rem 1.25rem', borderRadius: '0.75rem', fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer' }}
+                            >
+                                <FontAwesomeIcon icon={faFileCsv} /> Export CSV
+                            </button>
+                        )}
                         {canWrite && (
                             <button className={styles.addButton} onClick={handleAddNew}>
-                                ➕ Tambah Alumni
+                                <FontAwesomeIcon icon={faPlus} /> Tambah Alumni
                             </button>
                         )}
                     </div>
@@ -753,7 +810,7 @@ export const AlumniManagement = () => {
                     <h2 className={styles.filterTitle}>Filter & Pencarian</h2>
                     <div className={styles.filterGrid}>
                         <div className={styles.formGroup}>
-                            <label className={styles.label}>🔍 Nama Siswa</label>
+                            <label className={styles.label}><FontAwesomeIcon icon={faSearch} /> Nama Siswa</label>
                             <input
                                 type="text"
                                 value={filters.nama_lengkap}
@@ -766,7 +823,26 @@ export const AlumniManagement = () => {
                         </div>
 
                         <div className={styles.formGroup}>
-                            <label className={styles.label}>🎓 PTN Diterima</label>
+                            <label className={styles.label}><FontAwesomeIcon icon={faBuilding} /> Cabang</label>
+                            <select
+                                value={filters.cabang_id}
+                                onChange={(e) =>
+                                    setFilters({ ...filters, cabang_id: e.target.value, page: 1 })
+                                }
+                                className={styles.input}
+                                disabled={user?.role === 'admin_cabang'}
+                            >
+                                <option value="">Semua Cabang</option>
+                                {cabangOptions.map((cabang) => (
+                                    <option key={cabang.id} value={cabang.id}>
+                                        {cabang.nama}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <label className={styles.label}><FontAwesomeIcon icon={faGraduationCap} /> PTN Diterima</label>
                             <input
                                 type="text"
                                 value={filters.ptn_diterima}
@@ -779,7 +855,7 @@ export const AlumniManagement = () => {
                         </div>
 
                         <div className={styles.formGroup}>
-                            <label className={styles.label}>📅 Tahun Diterima</label>
+                            <label className={styles.label}><FontAwesomeIcon icon={faCalendarDays} /> Tahun Diterima</label>
                             <input
                                 type="number"
                                 value={filters.tahun_diterima}
@@ -792,7 +868,7 @@ export const AlumniManagement = () => {
                         </div>
 
                         <div className={styles.formGroup}>
-                            <label className={styles.label}>🧭 Jalur Masuk</label>
+                            <label className={styles.label}><FontAwesomeIcon icon={faCompass} /> Jalur Masuk</label>
                             <select
                                 value={filters.jalur_masuk}
                                 onChange={(e) =>
@@ -825,7 +901,7 @@ export const AlumniManagement = () => {
                         </div>
 
                         <div className={styles.formGroup}>
-                            <label className={styles.label}>📄 Per Halaman</label>
+                            <label className={styles.label}><FontAwesomeIcon icon={faFileCsv} /> Per Halaman</label>
                             <select
                                 value={filters.per_page}
                                 onChange={(e) =>
@@ -842,7 +918,7 @@ export const AlumniManagement = () => {
                 </div>
 
                 {/* Tabel Alumni */}
-                <div className={styles.tableCard}>
+                <div className={`${styles.tableCard} ${['direksi', 'pengajar', 'staff_karyawan'].includes(user?.role) ? styles.direksiTable : user?.role === 'super_admin' ? styles.superAdminAlumniTable : user?.role === 'admin_cabang' ? styles.adminCabangAlumniTable : ''}`}>
                     {loading ? (
                         <div className={styles.loadingContainer}>
                             <div className={styles.spinner}></div>
@@ -988,7 +1064,7 @@ export const AlumniManagement = () => {
                                                                 e.target.style.color = 'rgb(59, 130, 246)';
                                                             }}
                                                         >
-                                                            👁️
+                                                            <FontAwesomeIcon icon={faEye} />
                                                         </button>
                                                         {canWrite && (
                                                             <>
@@ -1020,7 +1096,7 @@ export const AlumniManagement = () => {
                                                                         e.target.style.color = 'rgb(34, 197, 94)';
                                                                     }}
                                                                 >
-                                                                    ✏️
+                                                                    <FontAwesomeIcon icon={faPen} />
                                                                 </button>
                                                                 <button
                                                                     onClick={() => handleDelete(alumni.id)}
@@ -1050,7 +1126,7 @@ export const AlumniManagement = () => {
                                                                         e.target.style.color = 'rgb(239, 68, 68)';
                                                                     }}
                                                                 >
-                                                                    🗑️
+                                                                    <FontAwesomeIcon icon={faTrash} />
                                                                 </button>
                                                             </>
                                                         )}
@@ -1077,7 +1153,7 @@ export const AlumniManagement = () => {
                                             cursor: filters.page === 1 ? 'not-allowed' : 'pointer',
                                         }}
                                     >
-                                        ← Sebelumnya
+                                        <FontAwesomeIcon icon={faChevronLeft} /> Sebelumnya
                                     </button>
 
                                     <span style={{ color: '#666', fontSize: '0.875rem' }}>
@@ -1095,14 +1171,14 @@ export const AlumniManagement = () => {
                                             cursor: filters.page === pagination.last_page ? 'not-allowed' : 'pointer',
                                         }}
                                     >
-                                        Selanjutnya →
+                                        Selanjutnya <FontAwesomeIcon icon={faChevronRight} />
                                     </button>
                                 </div>
                             )}
                         </>
                     ) : (
                         <div style={{ padding: '3rem', textAlign: 'center', color: '#999' }}>
-                            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📚</div>
+                            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}><FontAwesomeIcon icon={faGraduationCap} /></div>
                             <p>Tidak ada data alumni</p>
                         </div>
                     )}
@@ -1110,7 +1186,7 @@ export const AlumniManagement = () => {
 
                 {/* Modal Tambah/Edit Alumni */}
                 {showModal && (
-                    <div style={{
+                    <div className={styles.alumniModalOverlay} style={{
                         position: 'fixed',
                         inset: 0,
                         backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -1119,7 +1195,7 @@ export const AlumniManagement = () => {
                         justifyContent: 'center',
                         zIndex: 1000,
                     }}>
-                        <div style={{
+                        <div className={styles.alumniModalContent} style={{
                             background: 'white',
                             borderRadius: '1rem',
                             padding: '2rem',
@@ -1131,7 +1207,7 @@ export const AlumniManagement = () => {
                         }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                                 <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700, color: 'rgb(0 61 130)' }}>
-                                    {editingId ? '✏️ Edit Alumni' : '➕ Tambah Alumni'}
+                                    {editingId ? <><FontAwesomeIcon icon={faPen} /> Edit Alumni</> : 'Tambah Alumni'}
                                 </h2>
                                 <button
                                     onClick={() => { setShowModal(false); setEditingId(null); }}
@@ -1142,13 +1218,13 @@ export const AlumniManagement = () => {
                                         cursor: 'pointer',
                                     }}
                                 >
-                                    ✕
+                                    <FontAwesomeIcon icon={faXmark} />
                                 </button>
                             </div>
 
-                            <form onSubmit={handleSubmit}>
+                            <form onSubmit={handleSubmit} className={styles.alumniModalForm}>
                                 <div className={styles.formGroup}>
-                                    <label className={styles.label}>Siswa *</label>
+                                    <label className={styles.label}><FontAwesomeIcon icon={faUserGraduate} /> Siswa *</label>
                                     {editingId ? (
                                         <input
                                             type="text"
@@ -1178,7 +1254,7 @@ export const AlumniManagement = () => {
                                 <h3 style={{ marginTop: '1.5rem', marginBottom: '0.75rem', color: '#0f172a' }}>Data Siswa</h3>
 
                                 <div className={styles.formGroup}>
-                                    <label className={styles.label}>Cabang</label>
+                                    <label className={styles.label}><FontAwesomeIcon icon={faBuilding} /> Cabang</label>
                                     <input
                                         type="text"
                                         name="cabang_name"
@@ -1191,7 +1267,7 @@ export const AlumniManagement = () => {
 
 
                                 <div className={styles.formGroup}>
-                                    <label className={styles.label}>Nama Lengkap</label>
+                                    <label className={styles.label}><FontAwesomeIcon icon={faUserGraduate} /> Nama Lengkap</label>
                                     <input
                                         type="text"
                                         name="nama_lengkap"
@@ -1202,7 +1278,7 @@ export const AlumniManagement = () => {
                                 </div>
 
                                 <div className={styles.formGroup}>
-                                    <label className={styles.label}>Kelas</label>
+                                    <label className={styles.label}><FontAwesomeIcon icon={faBookOpen} /> Kelas</label>
                                     <input
                                         type="number"
                                         name="kelas"
@@ -1213,7 +1289,7 @@ export const AlumniManagement = () => {
                                 </div>
 
                                 <div className={styles.formGroup}>
-                                    <label className={styles.label}>Asal Sekolah</label>
+                                    <label className={styles.label}><FontAwesomeIcon icon={faSchool} /> Asal Sekolah</label>
                                     <input
                                         type="text"
                                         name="asal_sekolah"
@@ -1224,7 +1300,7 @@ export const AlumniManagement = () => {
                                 </div>
 
                                 <div className={styles.formGroup}>
-                                    <label className={styles.label}>Tanggal Lahir</label>
+                                    <label className={styles.label}><FontAwesomeIcon icon={faCalendarDays} /> Tanggal Lahir</label>
                                     <input
                                         type="date"
                                         name="tanggal_lahir"
@@ -1235,7 +1311,21 @@ export const AlumniManagement = () => {
                                 </div>
 
                                 <div className={styles.formGroup}>
-                                    <label className={styles.label}>No HP</label>
+                                    <label className={styles.label}><FontAwesomeIcon icon={faVenusMars} /> Jenis Kelamin</label>
+                                    <select
+                                        name="jenis_kelamin"
+                                        value={formData.jenis_kelamin}
+                                        onChange={handleInputChange}
+                                        className={styles.input}
+                                    >
+                                        <option value="">Pilih Jenis Kelamin</option>
+                                        <option value="laki-laki">Laki-laki</option>
+                                        <option value="perempuan">Perempuan</option>
+                                    </select>
+                                </div>
+
+                                <div className={styles.formGroup}>
+                                    <label className={styles.label}><FontAwesomeIcon icon={faPhone} /> No HP</label>
                                     <input
                                         type="text"
                                         name="no_hp"
@@ -1246,7 +1336,7 @@ export const AlumniManagement = () => {
                                 </div>
 
                                 <div className={styles.formGroup}>
-                                    <label className={styles.label}>Alamat</label>
+                                    <label className={styles.label}><FontAwesomeIcon icon={faLocationDot} /> Alamat</label>
                                     <textarea
                                         name="alamat"
                                         value={formData.alamat}
@@ -1258,7 +1348,7 @@ export const AlumniManagement = () => {
                                 </div>
 
                                 <div className={styles.formGroup}>
-                                    <label className={styles.label}>Email</label>
+                                    <label className={styles.label}><FontAwesomeIcon icon={faEnvelope} /> Email</label>
                                     <input
                                         type="email"
                                         name="email"
@@ -1269,7 +1359,7 @@ export const AlumniManagement = () => {
                                 </div>
 
                                 <div className={styles.formGroup}>
-                                    <label className={styles.label}>Informasi Villa Merah</label>
+                                    <label className={styles.label}><FontAwesomeIcon icon={faCircleInfo} /> Informasi Villa Merah</label>
                                     <input
                                         type="text"
                                         name="informasi_villa_merah"
@@ -1280,7 +1370,7 @@ export const AlumniManagement = () => {
                                 </div>
 
                                 <div className={styles.formGroup}>
-                                    <label className={styles.label}>Program yang Diikuti</label>
+                                    <label className={styles.label}><FontAwesomeIcon icon={faBookOpen} /> Program yang Diikuti</label>
                                     <input
                                         type="text"
                                         name="program_name"
@@ -1292,7 +1382,7 @@ export const AlumniManagement = () => {
                                 </div>
 
                                 <div className={styles.formGroup}>
-                                    <label className={styles.label}>Tahun Masuk</label>
+                                    <label className={styles.label}><FontAwesomeIcon icon={faCalendarDays} /> Tahun Masuk</label>
                                     <input
                                         type="date"
                                         name="tahun_masuk"
@@ -1449,7 +1539,7 @@ export const AlumniManagement = () => {
 
                 {/* Modal Detail Alumni */}
                 {showDetailModal && detailData && (
-                    <div style={{
+                    <div className={styles.alumniDetailOverlay} style={{
                         position: 'fixed',
                         inset: 0,
                         backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -1458,7 +1548,7 @@ export const AlumniManagement = () => {
                         justifyContent: 'center',
                         zIndex: 1000,
                     }}>
-                        <div style={{
+                        <div className={styles.alumniDetailContent} style={{
                             background: 'white',
                             borderRadius: '1rem',
                             padding: '2rem',
@@ -1468,9 +1558,9 @@ export const AlumniManagement = () => {
                             overflowY: 'auto',
                             boxShadow: '0 20px 25px rgba(0, 0, 0, 0.15)',
                         }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                            <div className={styles.alumniDetailHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                                 <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700, color: 'rgb(0 61 130)' }}>
-                                    👁️ Detail Alumni
+                                    <FontAwesomeIcon icon={faEye} /> Detail Alumni
                                 </h2>
                                 <button
                                     onClick={() => setShowDetailModal(false)}
@@ -1481,11 +1571,11 @@ export const AlumniManagement = () => {
                                         cursor: 'pointer',
                                     }}
                                 >
-                                    ✕
+                                    <FontAwesomeIcon icon={faXmark} />
                                 </button>
                             </div>
 
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                            <div className={styles.alumniDetailBody} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                                 <div>
                                     <label style={{ color: '#999', fontSize: '0.875rem', fontWeight: 500, display: 'block', marginBottom: '0.5rem' }}>Nama Siswa</label>
                                     <p style={{ margin: 0, fontSize: '1rem', fontWeight: 600 }}>{detailData.siswa?.nama_lengkap || '-'}</p>
@@ -1510,6 +1600,11 @@ export const AlumniManagement = () => {
                                 <div>
                                     <label style={{ color: '#999', fontSize: '0.875rem', fontWeight: 500, display: 'block', marginBottom: '0.5rem' }}>Tanggal Lahir</label>
                                     <p style={{ margin: 0, fontSize: '1rem', fontWeight: 600 }}>{formatDateForDisplay(detailData.siswa?.tanggal_lahir)}</p>
+                                </div>
+
+                                <div>
+                                    <label style={{ color: '#999', fontSize: '0.875rem', fontWeight: 500, display: 'block', marginBottom: '0.5rem' }}>Jenis Kelamin</label>
+                                    <p style={{ margin: 0, fontSize: '1rem', fontWeight: 600 }}>{detailData.siswa?.jenis_kelamin || '-'}</p>
                                 </div>
 
                                 <div>

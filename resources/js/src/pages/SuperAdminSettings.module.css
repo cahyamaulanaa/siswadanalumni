@@ -4,6 +4,10 @@
     flex-direction: column;
     gap: 24px;
     min-height: calc(100vh - 120px);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 .header {
@@ -16,11 +20,17 @@
     color: white;
     border-radius: 24px;
     box-shadow: 0 24px 48px rgba(30, 64, 175, 0.15);
+    min-width: 0;
+}
+
+.header > div:first-child {
+    min-width: 0;
 }
 
 .header h1 {
     font-size: 2rem;
     margin-bottom: 6px;
+    overflow-wrap: anywhere;
 }
 
 .header p {
@@ -46,8 +56,9 @@
 
 .gridLayout {
     display: grid;
-    grid-template-columns: 1.1fr 1fr;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
     gap: 24px;
+    min-width: 0;
 }
 
 .card {
@@ -56,6 +67,9 @@
     box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
     padding: 28px;
     border: 1px solid #e5e7eb;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .card h2 {
@@ -90,6 +104,7 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 18px;
+    min-width: 0;
 }
 
 .formGroup,
@@ -107,6 +122,9 @@
 
 .formGroup input,
 .formGroup select {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
     border: 1px solid #d1d5db;
     border-radius: 16px;
     padding: 14px 16px;
@@ -197,11 +215,13 @@
 
 .tableWrapper {
     overflow-x: auto;
+    max-width: 100%;
 }
 
 .table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
 }
 
 .table th,
@@ -209,6 +229,32 @@
     padding: 16px 14px;
     text-align: left;
     border-bottom: 1px solid #e5e7eb;
+    overflow-wrap: anywhere;
+}
+
+.table th:nth-child(1),
+.table td:nth-child(1) {
+    width: 18%;
+}
+
+.table th:nth-child(2),
+.table td:nth-child(2) {
+    width: 25%;
+}
+
+.table th:nth-child(3),
+.table td:nth-child(3) {
+    width: 20%;
+}
+
+.table th:nth-child(4),
+.table td:nth-child(4) {
+    width: 15%;
+}
+
+.table th:nth-child(5),
+.table td:nth-child(5) {
+    width: 22%;
 }
 
 .table th {
@@ -227,4 +273,49 @@
     padding: 18px;
     text-align: center;
     color: #6b7280;
+}
+
+@media (max-width: 1100px) {
+    .pageWrapper {
+        padding: 24px;
+    }
+
+    .gridLayout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .pageWrapper {
+        padding: 16px;
+        gap: 16px;
+    }
+
+    .header {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .header h1 {
+        font-size: 1.6rem;
+    }
+
+    .userBadge {
+        align-self: stretch;
+        text-align: left;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    .formGrid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .formGroupCheckbox,
+    .formAction {
+        grid-column: auto;
+    }
 }

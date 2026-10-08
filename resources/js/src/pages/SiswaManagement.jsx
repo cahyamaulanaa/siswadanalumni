@@ -3,10 +3,37 @@ import axios from 'axios';
 import { siswaService } from '../services/siswaService';
 import { useAuth } from '../hooks/useAuth';
 import api from '../services/api';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faUserGraduate,
+    faTrash,
+    faPlus,
+    faFileCsv,
+    faArrowRightArrowLeft,
+    faStar,
+    faSearch,
+    faCalendarDays,
+    faBuilding,
+    faBookOpen,
+    faEye,
+    faPen,
+    faChevronLeft,
+    faChevronRight,
+    faInbox,
+    faXmark,
+    faSchool,
+    faLocationDot,
+    faVenusMars,
+    faMapLocationDot,
+    faCircleInfo,
+    faEnvelope,
+    faRoad,
+} from '@fortawesome/free-solid-svg-icons';
 import styles from './SiswaManagement.module.css';
 
 export const SiswaManagement = () => {
     const { user } = useAuth();
+    const canExportCsv = user && !['staff_karyawan', 'pengajar'].includes(user.role);
     const [siswaList, setSiswaList] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -31,6 +58,7 @@ export const SiswaManagement = () => {
         kelas: '',
         asal_sekolah: '',
         tanggal_lahir: '',
+        jenis_kelamin: '',
         no_hp: '',
         provinsi_code: '',
         kabupaten_code: '',
@@ -499,6 +527,11 @@ export const SiswaManagement = () => {
                 setLoading(false);
                 return;
             }
+            if (!formData.jenis_kelamin) {
+                setError('❌ Pilih Jenis Kelamin');
+                setLoading(false);
+                return;
+            }
             if (!formData.no_hp?.trim()) {
                 setError('❌ Isi No. HP');
                 setLoading(false);
@@ -527,6 +560,7 @@ export const SiswaManagement = () => {
             submitData.append('kelas', String(formData.kelas));
             submitData.append('asal_sekolah', formData.asal_sekolah);
             submitData.append('tanggal_lahir', formData.tanggal_lahir);
+            submitData.append('jenis_kelamin', formData.jenis_kelamin);
             submitData.append('no_hp', formData.no_hp);
             submitData.append('provinsi_code', formData.provinsi_code);
             submitData.append('kabupaten_code', formData.kabupaten_code);
@@ -586,6 +620,7 @@ export const SiswaManagement = () => {
             kelas: '',
             asal_sekolah: '',
             tanggal_lahir: '',
+            jenis_kelamin: '',
             no_hp: '',
             provinsi_code: '',
             kabupaten_code: '',
@@ -618,6 +653,7 @@ export const SiswaManagement = () => {
                     kelas: editData.kelas || '',
                     asal_sekolah: editData.asal_sekolah || '',
                     tanggal_lahir: formatDateForInput(editData.tanggal_lahir),
+                    jenis_kelamin: editData.jenis_kelamin || '',
                     no_hp: editData.no_hp || '',
                     provinsi_code: editData.provinsi_code || '',
                     kabupaten_code: editData.kabupaten_code || '',
@@ -816,6 +852,11 @@ export const SiswaManagement = () => {
     };
 
     const handleExportCsv = async () => {
+        if (!canExportCsv) {
+            setError('Fitur export CSV tidak tersedia untuk role Staff Karyawan.');
+            return;
+        }
+
         try {
             setExportingCsv(true);
             setError(null);
@@ -924,6 +965,7 @@ export const SiswaManagement = () => {
             kelas: '',
             asal_sekolah: '',
             tanggal_lahir: '',
+            jenis_kelamin: '',
             no_hp: '',
             provinsi_code: '',
             kabupaten_code: '',
@@ -1028,50 +1070,54 @@ export const SiswaManagement = () => {
         <div className={styles.container}>
             <div className={styles.content}>
                 <div className={styles.header}>
-                    <h1 className={styles.title}>👨‍🎓 Manajemen Siswa</h1>
-                    <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                    <h1 className={`${styles.title} ${selectedIds.length > 0 ? styles.titleBulk : ''}`}>
+                        <FontAwesomeIcon icon={faUserGraduate} /> Manajemen Siswa
+                    </h1>
+                    <div className={styles.actionBar}>
                         {selectedIds.length > 0 && !isReadOnly && (
                             <>
                                 <button
                                     onClick={openBulkMoveModal}
-                                    className={styles.secondaryButton}
+                                    className={`${styles.secondaryButton} ${styles.actionButton}`}
                                     style={{ background: 'linear-gradient(135deg, rgb(59 130 246) 0%, rgb(99 102 241) 100%)' }}
                                 >
-                                    🔀 Pindah Kelas / Program ({selectedIds.length})
+                                    <FontAwesomeIcon icon={faArrowRightArrowLeft} /> Pindah Program ({selectedIds.length})
                                 </button>
                                 <button
                                     onClick={handleBulkConvertToAlumni}
-                                    className={styles.secondaryButton}
+                                    className={`${styles.secondaryButton} ${styles.actionButton}`}
                                     style={{ background: 'linear-gradient(135deg, rgb(34 197 94) 0%, rgb(52 211 153) 100%)' }}
                                 >
-                                    ⭐ Jadikan Alumni ({selectedIds.length})
+                                    <FontAwesomeIcon icon={faStar} /> Jadikan Alumni ({selectedIds.length})
                                 </button>
                                 <button
                                     onClick={handleBulkDelete}
-                                    className={styles.deleteButton}
+                                    className={`${styles.deleteButton} ${styles.actionButton}`}
                                     style={{ background: 'linear-gradient(135deg, rgb(239 68 68) 0%, rgb(220 38 38) 100%)' }}
                                 >
-                                    🗑️ Hapus {selectedIds.length} ({selectedIds.length === siswaList.length ? 'semua' : 'terpilih'})
+                                    <FontAwesomeIcon icon={faTrash} /> Hapus {selectedIds.length} ({selectedIds.length === siswaList.length ? 'semua' : 'terpilih'})
                                 </button>
                             </>
                         )}
-                        <button
-                            onClick={handleExportCsv}
-                            className={styles.secondaryButton}
-                            disabled={exportingCsv}
-                            style={{
-                                opacity: exportingCsv ? 0.7 : 1,
-                                background: 'linear-gradient(135deg, rgb(59 130 246) 0%, rgb(96 165 250) 100%)',
-                            }}
-                        >
-                            {exportingCsv ? '⏳ Mengekspor...' : '📄 Export CSV'}
-                        </button>
+                        {canExportCsv && (
+                            <button
+                                onClick={handleExportCsv}
+                                className={`${styles.secondaryButton} ${styles.actionButton}`}
+                                disabled={exportingCsv}
+                                style={{
+                                    opacity: exportingCsv ? 0.7 : 1,
+                                    background: 'linear-gradient(135deg, rgb(59 130 246) 0%, rgb(96 165 250) 100%)',
+                                }}
+                            >
+                                {exportingCsv ? 'Mengekspor...' : <><FontAwesomeIcon icon={faFileCsv} /> Export CSV</>}
+                            </button>
+                        )}
                         {!isReadOnly && (
                             <button
                                 onClick={handleAddNew}
-                                className={styles.addButton}
+                                className={`${styles.addButton} ${styles.actionButton}`}
                             >
-                                ➕ Tambah Siswa
+                                <FontAwesomeIcon icon={faPlus} /> Tambah Siswa
                             </button>
                         )}
                     </div>
@@ -1088,7 +1134,7 @@ export const SiswaManagement = () => {
                     <h2 className={styles.filterTitle}>Filter & Pencarian</h2>
                     <div className={styles.filterGrid}>
                         <div className={styles.formGroup}>
-                            <label className={styles.label}>🔍 Cari Nama</label>
+                            <label className={styles.label}><FontAwesomeIcon icon={faSearch} /> Cari Nama</label>
                             <input
                                 type="text"
                                 value={filters.nama_lengkap}
@@ -1101,7 +1147,7 @@ export const SiswaManagement = () => {
                         </div>
 
                         <div className={styles.formGroup}>
-                            <label className={styles.label}>📅 Tahun Masuk</label>
+                            <label className={styles.label}><FontAwesomeIcon icon={faCalendarDays} /> Tahun Masuk</label>
                             <input
                                 type="number"
                                 value={filters.tahun_masuk}
@@ -1116,7 +1162,7 @@ export const SiswaManagement = () => {
 
 
                         <div className={styles.formGroup}>
-                            <label className={styles.label}>🏢 Cabang</label>
+                            <label className={styles.label}><FontAwesomeIcon icon={faBuilding} /> Cabang</label>
                             <select
                                 value={filters.cabang_id}
                                 onChange={(e) =>
@@ -1132,7 +1178,7 @@ export const SiswaManagement = () => {
                         </div>
 
                         <div className={styles.formGroup}>
-                            <label className={styles.label}>📖 Kelas</label>
+                            <label className={styles.label}><FontAwesomeIcon icon={faBookOpen} /> Kelas</label>
                             <select
                                 value={filters.kelas}
                                 onChange={(e) =>
@@ -1148,7 +1194,7 @@ export const SiswaManagement = () => {
                         </div>
 
                         <div className={styles.formGroup}>
-                            <label className={styles.label}>📚 Program</label>
+                            <label className={styles.label}><FontAwesomeIcon icon={faBookOpen} /> Program</label>
                             <select
                                 value={filters.program_id}
                                 onChange={(e) =>
@@ -1164,7 +1210,7 @@ export const SiswaManagement = () => {
                         </div>
 
                         <div className={styles.formGroup}>
-                            <label className={styles.label}>📄 Per Halaman</label>
+                            <label className={styles.label}><FontAwesomeIcon icon={faFileCsv} /> Per Halaman</label>
                             <select
                                 value={filters.per_page}
                                 onChange={(e) =>
@@ -1269,21 +1315,21 @@ export const SiswaManagement = () => {
                                                                 className={styles.detailBtn}
                                                                 title="Lihat Detail"
                                                             >
-                                                                👁️ Detail
+                                                                <FontAwesomeIcon icon={faEye} /> Detail
                                                             </button>
                                                             <button
                                                                 onClick={() => handleEdit(siswa.id)}
                                                                 disabled={isReadOnly}
                                                                 className={styles.editBtn}
                                                             >
-                                                                ✏️ Edit
+                                                                <FontAwesomeIcon icon={faPen} /> Edit
                                                             </button>
                                                             <button
                                                                 onClick={() => handleDelete(siswa.id)}
                                                                 disabled={isReadOnly}
                                                                 className={styles.deleteBtn}
                                                             >
-                                                                🗑️ Hapus
+                                                                <FontAwesomeIcon icon={faTrash} /> Hapus
                                                             </button>
                                                         </div>
                                                     </td>
@@ -1298,7 +1344,7 @@ export const SiswaManagement = () => {
                             {pagination && (
                                 <div className={styles.paginationContainer}>
                                     <p className={styles.paginationInfo}>
-                                        📍 Menampilkan {(pagination.current_page - 1) * pagination.per_page + 1} hingga{' '}
+                                        <FontAwesomeIcon icon={faLocationDot} /> Menampilkan {(pagination.current_page - 1) * pagination.per_page + 1} hingga{' '}
                                         {Math.min(pagination.current_page * pagination.per_page, pagination.total)}{' '}
                                         dari {pagination.total} data
                                     </p>
@@ -1313,7 +1359,7 @@ export const SiswaManagement = () => {
                                             disabled={(pagination?.current_page || 1) === 1}
                                             className={styles.paginationBtn}
                                         >
-                                            ← Sebelumnya
+                                            <FontAwesomeIcon icon={faChevronLeft} /> Sebelumnya
                                         </button>
                                         <span className={styles.pageNumber}>
                                             {pagination.current_page} / {pagination.last_page}
@@ -1328,7 +1374,7 @@ export const SiswaManagement = () => {
                                             disabled={pagination.current_page === pagination.last_page}
                                             className={styles.paginationBtn}
                                         >
-                                            Selanjutnya →
+                                            Selanjutnya <FontAwesomeIcon icon={faChevronRight} />
                                         </button>
                                     </div>
                                 </div>
@@ -1336,7 +1382,7 @@ export const SiswaManagement = () => {
                         </>
                     ) : (
                         <div className={styles.emptyState}>
-                            <div className={styles.emptyIcon}>📭</div>
+                            <div className={styles.emptyIcon}><FontAwesomeIcon icon={faInbox} /></div>
                             <p className={styles.emptyText}>Tidak ada data siswa yang ditemukan</p>
                         </div>
                     )}
@@ -1344,17 +1390,21 @@ export const SiswaManagement = () => {
 
                 {/* Modal Form */}
                 {showModal && (
-                    <div className={styles.modalOverlay}>
-                        <div className={styles.modalContent}>
-                            <div className={styles.modalHeader}>
+                    <div className={`${styles.modalOverlay} ${styles.studentModalOverlay}`}>
+                        <div className={`${styles.modalContent} ${styles.studentModalContent}`}>
+                            <div className={`${styles.modalHeader} ${styles.studentModalHeader}`}>
+                                <div>
+                                    <p className={styles.studentModalEyebrow}>DATA SISWA</p>
                                 <h2 className={styles.modalTitle}>
-                                    {editingId ? '✏️ Edit Siswa' : '➕ Tambah Siswa Baru'}
+                                    {editingId ? <><FontAwesomeIcon icon={faPen} /> Edit Siswa</> : 'Tambah Siswa Baru'}
                                 </h2>
+                                    <p className={styles.studentModalSubtitle}>Lengkapi informasi siswa dengan data yang benar.</p>
+                                </div>
                                 <button
                                     onClick={() => setShowModal(false)}
                                     className={styles.modalCloseBtn}
                                 >
-                                    ✕
+                                    <FontAwesomeIcon icon={faXmark} />
                                 </button>
                             </div>
 
@@ -1362,7 +1412,7 @@ export const SiswaManagement = () => {
                                 <div className={styles.modalScroll}>
                                     <div className={styles.formGrid}>
                                         <div className={styles.formField}>
-                                            <label className={styles.formLabel}>👤 Nama Lengkap *</label>
+                                            <label className={styles.formLabel}><FontAwesomeIcon icon={faUserGraduate} /> Nama Lengkap *</label>
                                             <input
                                                 type="text"
                                                 name="nama_lengkap"
@@ -1374,7 +1424,7 @@ export const SiswaManagement = () => {
                                         </div>
 
                                     <div className={styles.formField}>
-                                        <label className={styles.formLabel}>📖 Kelas *</label>
+                                        <label className={styles.formLabel}><FontAwesomeIcon icon={faBookOpen} /> Kelas *</label>
                                         <select
                                             name="kelas"
                                             value={formData.kelas}
@@ -1390,7 +1440,7 @@ export const SiswaManagement = () => {
                                     </div>
 
                                     <div className={`${styles.formField} ${styles.schoolField}`}>
-                                        <label className={styles.formLabel}>🏫 Asal Sekolah *</label>
+                                        <label className={styles.formLabel}><FontAwesomeIcon icon={faSchool} /> Asal Sekolah *</label>
                                         <input
                                             type="text"
                                             name="asal_sekolah"
@@ -1427,7 +1477,7 @@ export const SiswaManagement = () => {
                                     </div>
 
                                     <div className={styles.formField}>
-                                        <label className={styles.formLabel}>📱 No. HP *</label>
+                                        <label className={styles.formLabel}><FontAwesomeIcon icon={faUserGraduate} /> No. HP *</label>
                                         <input
                                             type="tel"
                                             name="no_hp"
@@ -1440,7 +1490,7 @@ export const SiswaManagement = () => {
 
 
                                     <div className={styles.formField}>
-                                        <label className={styles.formLabel}>📅 Tanggal Lahir *</label>
+                                        <label className={styles.formLabel}><FontAwesomeIcon icon={faCalendarDays} /> Tanggal Lahir *</label>
                                         <input
                                             type="date"
                                             name="tanggal_lahir"
@@ -1452,7 +1502,22 @@ export const SiswaManagement = () => {
                                     </div>
 
                                     <div className={styles.formField}>
-                                        <label className={styles.formLabel}>🌍 Provinsi *</label>
+                                        <label className={styles.formLabel}><FontAwesomeIcon icon={faVenusMars} /> Jenis Kelamin *</label>
+                                        <select
+                                            name="jenis_kelamin"
+                                            value={formData.jenis_kelamin}
+                                            onChange={handleInputChange}
+                                            required
+                                            className={styles.formInput}
+                                        >
+                                            <option value="">Pilih Jenis Kelamin</option>
+                                            <option value="laki-laki">Laki-laki</option>
+                                            <option value="perempuan">Perempuan</option>
+                                        </select>
+                                    </div>
+
+                                    <div className={styles.formField}>
+                                        <label className={styles.formLabel}><FontAwesomeIcon icon={faLocationDot} /> Provinsi *</label>
                                         <select
                                             name="provinsi_code"
                                             value={formData.provinsi_code}
@@ -1470,7 +1535,7 @@ export const SiswaManagement = () => {
                                     </div>
 
                                     <div className={styles.formField}>
-                                        <label className={styles.formLabel}>🌆 Kabupaten / Kota *</label>
+                                        <label className={styles.formLabel}><FontAwesomeIcon icon={faMapLocationDot} /> Kabupaten / Kota *</label>
                                         <select
                                             name="kabupaten_code"
                                             value={formData.kabupaten_code}
@@ -1489,7 +1554,7 @@ export const SiswaManagement = () => {
                                     </div>
 
                                     <div className={styles.formField}>
-                                        <label className={styles.formLabel}>🏘️ Kecamatan *</label>
+                                        <label className={styles.formLabel}><FontAwesomeIcon icon={faLocationDot} /> Kecamatan *</label>
                                         <select
                                             name="kecamatan_code"
                                             value={formData.kecamatan_code}
@@ -1508,7 +1573,7 @@ export const SiswaManagement = () => {
                                     </div>
 
                                     <div className={styles.formField}>
-                                        <label className={styles.formLabel}>🏡 Kelurahan / Desa *</label>
+                                        <label className={styles.formLabel}><FontAwesomeIcon icon={faLocationDot} /> Kelurahan / Desa *</label>
                                         <select
                                             name="desa_code"
                                             value={formData.desa_code}
@@ -1527,7 +1592,7 @@ export const SiswaManagement = () => {
                                     </div>
 
                                     <div className={`${styles.formField} ${styles.fullWidth}`}>
-                                        <label className={styles.formLabel}>🛣️ Nama Jalan *</label>
+                                        <label className={styles.formLabel}><FontAwesomeIcon icon={faRoad} /> Nama Jalan *</label>
                                         <input
                                             type="text"
                                             name="jalan"
@@ -1540,7 +1605,7 @@ export const SiswaManagement = () => {
                                     </div>
 
                                     <div className={`${styles.formField} ${styles.fullWidth}`}>
-                                        <label className={styles.formLabel}>📍 Alamat Lengkap</label>
+                                        <label className={styles.formLabel}><FontAwesomeIcon icon={faLocationDot} /> Alamat Lengkap</label>
                                         <textarea
                                             name="alamat"
                                             value={buildAlamatFromWilayah()}
@@ -1550,7 +1615,7 @@ export const SiswaManagement = () => {
                                     </div>
 
                                     <div className={styles.formField}>
-                                        <label className={styles.formLabel}>📧 Email Siswa *</label>
+                                        <label className={styles.formLabel}><FontAwesomeIcon icon={faEnvelope} /> Email Siswa *</label>
                                         <input
                                             type="email"
                                             name="email"
@@ -1562,7 +1627,7 @@ export const SiswaManagement = () => {
                                     </div>
 
                                     <div className={styles.formField}>
-                                        <label className={styles.formLabel}>📚 Program Kelas yang Diikuti</label>
+                                        <label className={styles.formLabel}><FontAwesomeIcon icon={faBookOpen} /> Program Kelas yang Diikuti</label>
                                         <select
                                             name="program_id"
                                             value={formData.program_id}
@@ -1587,7 +1652,7 @@ export const SiswaManagement = () => {
                                     </div>
 
                                     <div className={styles.formField}>
-                                        <label className={styles.formLabel}>🏢 Cabang *</label>
+                                        <label className={styles.formLabel}><FontAwesomeIcon icon={faBuilding} /> Cabang *</label>
                                         <select
                                             name="cabang_id"
                                             value={formData.cabang_id}
@@ -1605,7 +1670,7 @@ export const SiswaManagement = () => {
                                     </div>
 
                                     <div className={styles.formField}>
-                                        <label className={styles.formLabel}>📅 Tanggal Masuk *</label>
+                                        <label className={styles.formLabel}><FontAwesomeIcon icon={faCalendarDays} /> Tanggal Masuk *</label>
                                         <input
                                             type="date"
                                             name="tahun_masuk"
@@ -1617,7 +1682,7 @@ export const SiswaManagement = () => {
                                     </div>
 
                                     <div className={styles.formField}>
-                                        <label className={styles.formLabel}>ℹ️ Informasi Villa Merah *</label>
+                                        <label className={styles.formLabel}><FontAwesomeIcon icon={faCircleInfo} /> Informasi Villa Merah *</label>
                                         <select
                                             name="informasi_villa_merah"
                                             value={formData.informasi_villa_merah}
@@ -1635,16 +1700,6 @@ export const SiswaManagement = () => {
                                         </select>
                                     </div>
 
-                                    <div className={`${styles.formField} ${styles.fullWidth}`}>
-                                        <label className={styles.formLabel}>📸 Foto Siswa</label>
-                                        <input
-                                            type="file"
-                                            name="foto"
-                                            onChange={handleInputChange}
-                                            accept="image/*"
-                                            className={styles.formInput}
-                                        />
-                                    </div>
                                 </div>
                             </div>
 
@@ -1674,19 +1729,19 @@ export const SiswaManagement = () => {
                     <div className={styles.modalOverlay} onClick={() => setShowBulkMoveModal(false)}>
                         <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
                             <div className={styles.modalHeader}>
-                                <h2 className={styles.modalTitle}>🔀 Pindah Siswa Terpilih</h2>
+                                <h2 className={styles.modalTitle}><FontAwesomeIcon icon={faArrowRightArrowLeft} /> Pindah Siswa Terpilih</h2>
                                 <button
                                     onClick={() => setShowBulkMoveModal(false)}
                                     className={styles.modalCloseBtn}
                                 >
-                                    ✕
+                                    <FontAwesomeIcon icon={faXmark} />
                                 </button>
                             </div>
 
                             <div className={styles.modalForm}>
                                 <div style={{ padding: '1rem' }}>
                                     <div className={styles.formField}>
-                                        <label className={styles.formLabel}>📖 Kelas Tujuan *</label>
+                                        <label className={styles.formLabel}><FontAwesomeIcon icon={faBookOpen} /> Kelas Tujuan *</label>
                                         <select
                                             value={bulkMoveKelas}
                                             onChange={(e) => { setBulkMoveKelas(e.target.value); if (e.target.value) fetchProgramByKelas(e.target.value); }}
@@ -1700,7 +1755,7 @@ export const SiswaManagement = () => {
                                     </div>
 
                                     <div className={styles.formField}>
-                                        <label className={styles.formLabel}>📚 Program Tujuan (opsional)</label>
+                                        <label className={styles.formLabel}><FontAwesomeIcon icon={faBookOpen} /> Program Tujuan (opsional)</label>
                                         <select
                                             value={bulkMoveProgramId}
                                             onChange={(e) => setBulkMoveProgramId(e.target.value)}
@@ -1729,16 +1784,16 @@ export const SiswaManagement = () => {
 
                 {/* Detail Modal */}
                 {showDetailModal && (
-                    <div className={styles.modalOverlay} onClick={() => setShowDetailModal(false)}>
-                        <div className={styles.detailModalContent} onClick={(e) => e.stopPropagation()}>
+                    <div className={`${styles.modalOverlay} ${styles.studentDetailOverlay}`} onClick={() => setShowDetailModal(false)}>
+                        <div className={`${styles.detailModalContent} ${styles.studentDetailContent}`} onClick={(e) => e.stopPropagation()}>
                             {/* Header */}
-                            <div className={styles.detailHeader}>
-                                <h2>📋 Detail Data Siswa</h2>
+                            <div className={`${styles.detailHeader} ${styles.studentDetailHeader}`}>
+                                <h2><FontAwesomeIcon icon={faUserGraduate} /> Detail Data Siswa</h2>
                                 <button 
                                     className={styles.detailCloseBtn}
                                     onClick={() => setShowDetailModal(false)}
                                 >
-                                    ✕
+                                    <FontAwesomeIcon icon={faXmark} />
                                 </button>
                             </div>
 
@@ -1751,7 +1806,7 @@ export const SiswaManagement = () => {
                                 </div>
                             ) : detailData && (
                                 <>
-                                    <div className={styles.detailBody}>
+                                    <div className={`${styles.detailBody} ${styles.studentDetailBody}`}>
                                         {/* Foto Section */}
                                         {detailData.foto && (
                                             <div className={styles.fotoSection}>
@@ -1789,6 +1844,10 @@ export const SiswaManagement = () => {
                                     <div className={styles.infoCard}>
                                         <label className={styles.infoLabel}>Tanggal Lahir</label>
                                         <p className={styles.infoValue}>{detailData.tanggal_lahir ? new Date(detailData.tanggal_lahir).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) : '-'}</p>
+                                    </div>
+                                    <div className={styles.infoCard}>
+                                        <label className={styles.infoLabel}>Jenis Kelamin</label>
+                                        <p className={styles.infoValue}>{detailData.jenis_kelamin || '-'}</p>
                                     </div>
                                     <div className={styles.infoCard}>
                                         <label className={styles.infoLabel}>Email Siswa</label>

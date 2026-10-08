@@ -77,13 +77,16 @@ class SiswaController extends Controller
         // Filter berdasarkan cabang
         if ($user->role === 'admin_cabang') {
             $query->where('cabang_id', $user->cabang_id);
-        } elseif ($request->has('cabang_id')) {
-            if ($user->role !== 'super_admin') {
+        } elseif ($request->has('cabang_id') && $request->cabang_id) {
+            $allowedBranchFilterRoles = ['super_admin', 'direksi', 'pengajar', 'staff_karyawan'];
+
+            if (!in_array($user->role, $allowedBranchFilterRoles, true)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Anda tidak memiliki akses untuk filter cabang lain.',
                 ], 403);
             }
+
             $query->where('cabang_id', $request->cabang_id);
         }
 
@@ -169,6 +172,7 @@ class SiswaController extends Controller
             'kelas' => 'required|integer|between:1,12',
             'asal_sekolah' => 'required|string|max:150',
             'tanggal_lahir' => 'required|date',
+            'jenis_kelamin' => 'required|in:laki-laki,perempuan',
             'no_hp' => 'required|string|max:20',
             // Wilayah codes and jalan
             'provinsi_code' => 'required|string|max:20',
@@ -261,6 +265,7 @@ class SiswaController extends Controller
             'kelas' => 'sometimes|integer|between:1,12',
             'asal_sekolah' => 'sometimes|string|max:150',
             'tanggal_lahir' => 'sometimes|date',
+            'jenis_kelamin' => 'sometimes|in:laki-laki,perempuan',
             'no_hp' => 'sometimes|string|max:20',
             // Wilayah codes and jalan
             'provinsi_code' => 'sometimes|string|max:20',
@@ -485,7 +490,7 @@ class SiswaController extends Controller
     private function invalidateStatistikCaches(?int $cabangId = null): void
     {
         $segments = ['', $cabangId];
-        $tahun = date('Y');
+        $tahunFilters = [date('Y'), 'all'];
         $levels = ['provinsi', 'kabupaten', 'kecamatan', 'desa'];
         $limits = [5, 0, 'all'];
         $jalurs = ['all', 'snbp', 'snbt', 'mandiri'];
@@ -493,7 +498,9 @@ class SiswaController extends Controller
         foreach ($segments as $segment) {
             $segmentKey = $segment === '' || $segment === null ? '' : (string) $segment;
 
-            Cache::forget("statistik_summary_{$segmentKey}_{$tahun}");
+            foreach ($tahunFilters as $tahun) {
+                Cache::forget("statistik_summary_{$segmentKey}_{$tahun}");
+            }
             Cache::forget("statistik_kelulusan_{$segmentKey}");
             Cache::forget("statistik_ptn_{$segmentKey}");
             Cache::forget("statistik_jalur_masuk_{$segmentKey}");
@@ -506,7 +513,9 @@ class SiswaController extends Controller
 
             foreach ($levels as $lvl) {
                 foreach ($limits as $lim) {
-                    Cache::forget("statistik_wilayah_{$segmentKey}_{$lvl}_{$lim}");
+                    foreach ($tahunFilters as $tahun) {
+                        Cache::forget("statistik_wilayah_{$segmentKey}_{$tahun}_{$lvl}_{$lim}");
+                    }
                 }
             }
         }

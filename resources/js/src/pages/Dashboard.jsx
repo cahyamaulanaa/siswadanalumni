@@ -3,6 +3,20 @@ import { LineChart, BarChart, PieChart, ProgressBarList } from '../components/Ch
 import { statistikService } from '../services/statistikService';
 import { siswaService } from '../services/siswaService';
 import { useAuth } from '../hooks/useAuth';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faUserGraduate,
+    faGraduationCap,
+    faChartColumn,
+    faBuilding,
+    faTrophy,
+    faChartLine,
+    faBullseye,
+    faGlobe,
+    faSchool,
+    faChartArea,
+    faBookOpen,
+} from '@fortawesome/free-solid-svg-icons';
 import styles from './Dashboard.module.css';
 
 export const Dashboard = () => {
@@ -42,6 +56,10 @@ export const Dashboard = () => {
         // Only default to user's cabang for admin_cabang; pengajar and staff_karyawan should see cross-branch stats like direksi
         cabang_id: (user && user.role === 'admin_cabang') ? user.cabang_id : '',
     });
+    const [pendingFilter, setPendingFilter] = useState({
+        tahun: new Date().getFullYear(),
+        cabang_id: (user && user.role === 'admin_cabang') ? user.cabang_id : '',
+    });
 
     useEffect(() => {
         if (!user) {
@@ -52,6 +70,7 @@ export const Dashboard = () => {
         if (filter.cabang_id !== cabangId) {
             setFilter((prevFilter) => ({ ...prevFilter, cabang_id: cabangId }));
         }
+        setPendingFilter((prevFilter) => ({ ...prevFilter, cabang_id: cabangId }));
     }, [user]);
 
     useEffect(() => {
@@ -72,14 +91,26 @@ export const Dashboard = () => {
     }, [user?.id]);
 
     useEffect(() => {
+        if (!user) {
+            return;
+        }
+
         fetchDashboardData();
     }, [filter]);
 
     useEffect(() => {
+        if (!user) {
+            return;
+        }
+
         fetchWilayah();
     }, [filter, wilayahLevel]);
 
     useEffect(() => {
+        if (!user) {
+            return;
+        }
+
         fetchKelulusanPersentase();
     }, [filter, kelulusanJalurFilter]);
 
@@ -87,7 +118,7 @@ export const Dashboard = () => {
         const cleaned = nextYear === '' ? '' : String(nextYear).trim();
 
         if (cleaned === '') {
-            setFilter((prev) => ({ ...prev, tahun: 'all' }));
+            setPendingFilter((prev) => ({ ...prev, tahun: 'all' }));
             setYearInput('');
             return;
         }
@@ -96,13 +127,17 @@ export const Dashboard = () => {
             return;
         }
 
-        setFilter((prev) => ({ ...prev, tahun: Number(cleaned) }));
+        setPendingFilter((prev) => ({ ...prev, tahun: Number(cleaned) }));
         setYearInput(cleaned);
     };
 
     const handleResetYearFilter = () => {
-        setFilter((prev) => ({ ...prev, tahun: 'all' }));
+        setPendingFilter((prev) => ({ ...prev, tahun: 'all' }));
         setYearInput('');
+    };
+
+    const handleApplyFilters = () => {
+        setFilter({ ...pendingFilter });
     };
 
     // Listen for global updates (triggered after create/update/delete)
@@ -117,9 +152,16 @@ export const Dashboard = () => {
     }, []);
 
     const fetchDashboardData = async (force = false) => {
+        if (!user) {
+            return;
+        }
+
         try {
             setLoading(true);
-            const params = { ...filter };
+            const params = {
+                cabang_id: filter.cabang_id || '',
+                tahun: filter.tahun || 'all',
+            };
             if (force) params.force_refresh = true;
 
             const [summaryData, kelulusanData, jalurData, ptnData] = await Promise.all([
@@ -150,6 +192,7 @@ export const Dashboard = () => {
         try {
             setRefreshing(true);
             await fetchDashboardData(true);
+            await fetchWilayah(true);
             await fetchKelulusanPersentase(true);
         } catch (e) {
             console.error('Refresh failed', e);
@@ -208,7 +251,12 @@ export const Dashboard = () => {
 
     const fetchWilayah = async (force = false) => {
         try {
-            const params = { ...filter, level: wilayahLevel, limit: 5 };
+            const params = {
+                cabang_id: filter.cabang_id || '',
+                tahun: filter.tahun || 'all',
+                level: wilayahLevel,
+                limit: 5,
+            };
             if (force) params.force_refresh = true;
             const resp = await statistikService.getWilayah(params);
             if (resp.success) {
@@ -224,7 +272,11 @@ export const Dashboard = () => {
         const fetchKelulusanPersentase = async (force = false) => {
             try {
                 setLoadingKelulusanPersentase(true);
-                const params = { ...filter, jalur: kelulusanJalurFilter };
+                const params = {
+                    cabang_id: filter.cabang_id || '',
+                    tahun: filter.tahun || 'all',
+                    jalur: kelulusanJalurFilter,
+                };
                 if (force) params.force_refresh = true;
                 const resp = await statistikService.getKelulusanPersentase(params);
                 if (resp.success) {
@@ -321,7 +373,7 @@ export const Dashboard = () => {
                 {/* Header */}
                 <div className={styles.header}>
                     <div>
-                        <h1 className={styles.title}>Dashboard SISA</h1>
+                        <h1 className={styles.title}>Dashboard Sistem Informasi Siswa & Alumni</h1>
                         <p className={styles.subtitle}>Selamat datang kembali, {user?.nama}! 👋</p>
                     </div>
                     <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
@@ -359,8 +411,8 @@ export const Dashboard = () => {
                         <div className={styles.formGroup}>
                             <label className={styles.label}>Cabang</label>
                             <select
-                                value={filter.cabang_id}
-                                onChange={(e) => setFilter((prev) => ({ ...prev, cabang_id: e.target.value }))}
+                                value={pendingFilter.cabang_id}
+                                onChange={(e) => setPendingFilter((prev) => ({ ...prev, cabang_id: e.target.value }))}
                                 className={styles.input}
                                 disabled={user?.role === 'admin_cabang'}
                             >
@@ -418,6 +470,17 @@ export const Dashboard = () => {
                                 </button>
                             </div>
                         </div>
+                        <div className={styles.formGroup}>
+                            <label className={styles.label}>&nbsp;</label>
+                            <button
+                                type="button"
+                                onClick={handleApplyFilters}
+                                className={styles.refreshButton}
+                                style={{ minHeight: '42px' }}
+                            >
+                                Terapkan Filter
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -425,7 +488,7 @@ export const Dashboard = () => {
                 <div className={styles.cardsGrid}>
                     <div className={`${styles.card} ${styles.cardBlue}`}>
                         <div className={styles.cardHeader}>
-                            <span className={styles.cardIcon}>👨‍🎓</span>
+                            <span className={`${styles.cardIcon} ${styles.cardIconBlue}`}><FontAwesomeIcon icon={faUserGraduate} /></span>
                             <h3 className={styles.cardLabel}>Siswa Aktif</h3>
                         </div>
                         <p className={styles.cardValue}>
@@ -436,7 +499,7 @@ export const Dashboard = () => {
 
                     <div className={`${styles.card} ${styles.cardGreen}`}>
                         <div className={styles.cardHeader}>
-                            <span className={styles.cardIcon}>🎓</span>
+                            <span className={`${styles.cardIcon} ${styles.cardIconGreen}`}><FontAwesomeIcon icon={faGraduationCap} /></span>
                             <h3 className={styles.cardLabel}>Total Alumni</h3>
                         </div>
                         <p className={styles.cardValue}>
@@ -447,7 +510,7 @@ export const Dashboard = () => {
 
                     <div className={`${styles.card} ${styles.cardPurple}`}>
                         <div className={styles.cardHeader}>
-                            <span className={styles.cardIcon}>📊</span>
+                            <span className={`${styles.cardIcon} ${styles.cardIconAmber}`}><FontAwesomeIcon icon={faChartColumn} /></span>
                             <h3 className={styles.cardLabel}>Total Keseluruhan</h3>
                         </div>
                         <p className={styles.cardValue}>
@@ -461,7 +524,7 @@ export const Dashboard = () => {
                 <div className={styles.chartsGrid}>
                     <div className={styles.chartCard}>
                         <div className={styles.chartHeader}>
-                            <h2 className={styles.chartTitle}>🏢 Siswa Aktif per Cabang</h2>
+                            <h2 className={styles.chartTitle}><FontAwesomeIcon className={`${styles.chartTitleIcon} ${styles.iconBlue}`} icon={faBuilding} /> Siswa Aktif per Cabang</h2>
                         </div>
                         {siswaPerCabangLabels.length > 0 ? (
                             <BarChart
@@ -479,7 +542,7 @@ export const Dashboard = () => {
                     {/* Top 5 Program Siswa Aktif Terbanyak */}
                     <div className={styles.chartCard}>
                         <div className={styles.chartHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <h2 className={styles.chartTitle}>🏆 Top 5 Program Siswa Aktif</h2>
+                            <h2 className={styles.chartTitle}><FontAwesomeIcon className={`${styles.chartTitleIcon} ${styles.iconAmber}`} icon={faTrophy} /> Top 5 Program Siswa Aktif</h2>
                             <span style={{ fontSize: '1.3rem', color: '#64748b', lineHeight: 1 }}>⋮</span>
                         </div>
                         {topProgramChartItems.length > 0 ? (
@@ -500,7 +563,7 @@ export const Dashboard = () => {
 
                     <div className={styles.chartCard}>
                         <div className={styles.chartHeader}>
-                            <h2 className={styles.chartTitle}>🎓 Alumni per Cabang</h2>
+                            <h2 className={styles.chartTitle}><FontAwesomeIcon className={`${styles.chartTitleIcon} ${styles.iconGreen}`} icon={faGraduationCap} /> Alumni per Cabang</h2>
                         </div>
                         {alumniPerCabangLabels.length > 0 ? (
                             <LineChart
@@ -516,7 +579,7 @@ export const Dashboard = () => {
 
                     <div className={styles.chartCard}>
                         <div className={styles.chartHeader}>
-                            <h2 className={styles.chartTitle}>🎯 Jalur Masuk</h2>
+                            <h2 className={styles.chartTitle}><FontAwesomeIcon className={`${styles.chartTitleIcon} ${styles.iconTeal}`} icon={faBullseye} /> Jalur Masuk</h2>
                         </div>
                         {jalurLabels.length > 0 ? (
                             <PieChart
@@ -534,7 +597,7 @@ export const Dashboard = () => {
                                 <div className={styles.modalOverlay} onClick={() => setShowWilayahDetailModal(false)}>
                                     <div className={styles.detailModalContent} onClick={(e) => e.stopPropagation()}>
                                         <div className={styles.detailHeader}>
-                                            <h2>🌍 Semua Wilayah Penyumbang</h2>
+                                            <h2><FontAwesomeIcon className={`${styles.chartTitleIcon} ${styles.iconTeal}`} icon={faGlobe} /> Semua Wilayah Penyumbang</h2>
                                             <button className={styles.modalCloseBtn} onClick={() => setShowWilayahDetailModal(false)}>✕</button>
                                         </div>
                                         <div className={styles.detailBody}>
@@ -567,7 +630,7 @@ export const Dashboard = () => {
 
                     <div className={styles.chartCard}>
                         <div className={styles.chartHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <h2 className={styles.chartTitle}>🏫 Top 5 Sekolah Penyumbang</h2>
+                            <h2 className={styles.chartTitle}><FontAwesomeIcon className={`${styles.chartTitleIcon} ${styles.iconBlue}`} icon={faSchool} /> Top 5 Sekolah Penyumbang</h2>
                             <span style={{ fontSize: '1.3rem', color: '#64748b', lineHeight: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px' }}>⋮</span>
                         </div>
                         {topSchoolChartItems.length > 0 ? (
@@ -588,7 +651,7 @@ export const Dashboard = () => {
 
                     <div className={styles.chartCard}>
                         <div className={styles.chartHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <h2 className={styles.chartTitle}>🌍 Top 5 Wilayah Penyumbang</h2>
+                            <h2 className={styles.chartTitle}><FontAwesomeIcon className={`${styles.chartTitleIcon} ${styles.iconTeal}`} icon={faGlobe} /> Top 5 Wilayah Penyumbang</h2>
                             <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
                                 <select value={wilayahLevel} onChange={handleWilayahLevelChange} style={{ padding: '0.35rem 0.5rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0', background: '#fff' }}>
                                     <option value="provinsi">Provinsi</option>
@@ -616,7 +679,7 @@ export const Dashboard = () => {
 
                     <div className={styles.chartCard}>
                         <div className={styles.chartHeader}>
-                            <h2 className={styles.chartTitle}>📈 Tren Kelulusan</h2>
+                            <h2 className={styles.chartTitle}><FontAwesomeIcon className={`${styles.chartTitleIcon} ${styles.iconGreen}`} icon={faChartLine} /> Tren Kelulusan</h2>
                         </div>
                         {kelulusanLabels.length > 0 ? (
                             <LineChart
@@ -632,7 +695,7 @@ export const Dashboard = () => {
 
                     <div className={styles.chartCard}>
                         <div className={styles.chartHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <h2 className={styles.chartTitle}>🎓 Persentase Kelulusan</h2>
+                            <h2 className={styles.chartTitle}><FontAwesomeIcon className={`${styles.chartTitleIcon} ${styles.iconAmber}`} icon={faChartArea} /> Persentase Kelulusan</h2>
                             <select value={kelulusanJalurFilter} onChange={(e) => setKelulusanJalurFilter(e.target.value)} style={{ padding: '0.35rem 0.5rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0', background: '#fff' }}>
                                 <option value="all">Semua Jalur</option>
                                 <option value="snbp">SNBP</option>
@@ -666,7 +729,7 @@ export const Dashboard = () => {
 
                     <div className={styles.chartCard}>
                         <div className={styles.chartHeader}>
-                            <h2 className={styles.chartTitle}>🏫 Top 5 PTN/PTS Terbanyak</h2>
+                            <h2 className={styles.chartTitle}><FontAwesomeIcon className={`${styles.chartTitleIcon} ${styles.iconBlue}`} icon={faSchool} /> Top 5 PTN/PTS Terbanyak</h2>
                         </div>
                         {ptnChartItems.length > 0 ? (
                             <ProgressBarList items={ptnChartItems} />
@@ -690,7 +753,7 @@ export const Dashboard = () => {
                     <div className={styles.modalOverlay} onClick={() => setShowProgramDetailModal(false)}>
                         <div className={styles.detailModalContent} onClick={(e) => e.stopPropagation()}>
                             <div className={styles.detailHeader}>
-                                <h2>📚 Seluruh Program Kelas</h2>
+                                <h2><FontAwesomeIcon className={`${styles.chartTitleIcon} ${styles.iconAmber}`} icon={faBookOpen} /> Seluruh Program Kelas</h2>
                                 <button className={styles.modalCloseBtn} onClick={() => setShowProgramDetailModal(false)}>✕</button>
                             </div>
                             <div className={styles.detailBody}>
@@ -723,7 +786,7 @@ export const Dashboard = () => {
                     <div className={styles.modalOverlay} onClick={() => setShowSchoolDetailModal(false)}>
                         <div className={styles.detailModalContent} onClick={(e) => e.stopPropagation()}>
                             <div className={styles.detailHeader}>
-                                <h2>🏫 Seluruh Sekolah Penyumbang</h2>
+                                <h2><FontAwesomeIcon className={`${styles.chartTitleIcon} ${styles.iconBlue}`} icon={faSchool} /> Seluruh Sekolah Penyumbang</h2>
                                 <button className={styles.modalCloseBtn} onClick={() => setShowSchoolDetailModal(false)}>✕</button>
                             </div>
                             <div className={styles.detailBody}>
@@ -756,7 +819,7 @@ export const Dashboard = () => {
                     <div className={styles.modalOverlay} onClick={() => setShowPtnDetailModal(false)}>
                         <div className={styles.detailModalContent} onClick={(e) => e.stopPropagation()}>
                             <div className={styles.detailHeader}>
-                                <h2>🏫 Seluruh PTN / PTS</h2>
+                                <h2><FontAwesomeIcon className={`${styles.chartTitleIcon} ${styles.iconBlue}`} icon={faSchool} /> Seluruh PTN / PTS</h2>
                                 <button className={styles.modalCloseBtn} onClick={() => setShowPtnDetailModal(false)}>✕</button>
                             </div>
                             <div className={styles.detailBody}>

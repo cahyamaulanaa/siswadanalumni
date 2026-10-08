@@ -23,12 +23,15 @@ class AlumniController extends Controller
                 $q->withTrashed()->where('cabang_id', $user->cabang_id);
             });
         } elseif ($request->has('cabang_id') && $request->cabang_id) {
-            if ($user->role !== 'super_admin') {
+            $allowedBranchFilterRoles = ['super_admin', 'direksi', 'pengajar', 'staff_karyawan'];
+
+            if (!in_array($user->role, $allowedBranchFilterRoles, true)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Anda tidak memiliki akses untuk filter cabang lain.',
                 ], 403);
             }
+
             $query->whereHas('siswa', function ($q) use ($request) {
                 $q->withTrashed()->where('cabang_id', $request->cabang_id);
             });
@@ -203,6 +206,7 @@ class AlumniController extends Controller
         }
 
         $validated = $request->validate([
+            'jenis_kelamin' => 'nullable|in:laki-laki,perempuan',
             'status_kelulusan' => 'nullable|in:lolos,tidak_lolos',
             'ptn_diterima' => 'nullable|string|max:255',
             'jurusan' => 'nullable|string|max:255',
@@ -230,9 +234,16 @@ class AlumniController extends Controller
             }
         }
 
+        if (array_key_exists('jenis_kelamin', $validated)) {
+            Siswa::withTrashed()->where('id', $alumni->siswa_id)->update([
+                'jenis_kelamin' => $validated['jenis_kelamin'],
+            ]);
+            unset($validated['jenis_kelamin']);
+        }
+
         $alumni->update($validated);
 
-        $siswa = Siswa::find($alumni->siswa_id);
+        $siswa = Siswa::withTrashed()->find($alumni->siswa_id);
         $cabangId = $siswa ? $siswa->cabang_id : null;
         $this->invalidateStatistikCaches($cabangId);
 

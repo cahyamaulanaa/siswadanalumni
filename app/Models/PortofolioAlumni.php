@@ -56,15 +56,6 @@ class PortofolioAlumni extends Model
             return null;
         }
 
-        $relativeUrl = '/storage/' . ltrim($relativePath, '/');
-
-        $request = request();
-        if ($request) {
-            $baseUrl = rtrim($request->getSchemeAndHttpHost() . $request->getBaseUrl(), '/');
-
-            return $baseUrl . $relativeUrl;
-        }
-
-        return url($relativeUrl);
+        return route('media.file', ['path' => $relativePath]);
     }
 }

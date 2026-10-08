@@ -134,13 +134,13 @@
 }
 
 .subtitle {
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   color: var(--color-white);
   font-weight: 300;
 }
 
 .brandSubtitle {
-  font-size: 0.8rem;
+  font-size: 0.850rem;
   color: var(--color-white);
   font-weight: 500;
   margin: 0.35rem 0 0;

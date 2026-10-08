@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/auth/login', [AuthController::class, 'login']);
 
 // Protected routes (auth required)
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'log_activity'])->group(function () {
     // Auth routes
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me', [AuthController::class, 'me']);
@@ -50,6 +50,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Users routes (super_admin only)
     Route::middleware('check_role:super_admin')->group(function () {
+        Route::get('/activity-logs', [\App\Http\Controllers\Api\ActivityLogController::class, 'index']);
+        Route::get('/activity-logs/export', [\App\Http\Controllers\Api\ActivityLogController::class, 'export']);
+
         Route::get('/users', [\App\Http\Controllers\Api\UserController::class, 'index']);
         Route::post('/users', [\App\Http\Controllers\Api\UserController::class, 'store']);
         Route::get('/users/{id}', [\App\Http\Controllers\Api\UserController::class, 'show']);

@@ -77,8 +77,8 @@ class PortofolioAlumniController extends Controller
 
         $validated = $request->validate([
             'alumni_id' => 'required|integer|exists:alumni,id',
-            'gambar_suasana' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:20480',
-            'gambar_karya_bebas' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:20480',
+            'gambar_suasana' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'gambar_karya_bebas' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
 
         // If admin_cabang, ensure alumni belongs to same cabang
@@ -120,8 +120,8 @@ class PortofolioAlumniController extends Controller
 
         $validated = $request->validate([
             'alumni_id' => 'required|integer|exists:alumni,id',
-            'gambar_suasana' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:20480',
-            'gambar_karya_bebas' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:20480',
+            'gambar_suasana' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'gambar_karya_bebas' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
 
         if ($user->role === 'admin_cabang') {

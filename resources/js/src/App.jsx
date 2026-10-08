@@ -7,6 +7,7 @@ import { SiswaManagement } from './pages/SiswaManagement';
 import { AlumniManagement } from './pages/AlumniManagement';
 import { PortofolioAlumniManagement } from './pages/PortofolioAlumniManagement';
 import { Settings } from './pages/Settings';
+import { ActivityLog } from './pages/ActivityLog';
 import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
 
@@ -34,7 +35,7 @@ const AppLayout = () => {
             <Navbar />
             <div style={{ display: 'flex', flex: 1 }}>
                 <Sidebar />
-                <main style={{ marginLeft: '220px', flex: 1, transition: 'margin-left 0.3s ease' }}>
+                <main style={{ marginLeft: '220px', flex: 1, minWidth: 0, overflowX: 'hidden', transition: 'margin-left 0.3s ease' }}>
                     <Outlet />
                 </main>
             </div>
@@ -59,6 +60,7 @@ export const App = () => {
                     <Route path="/alumni" element={<AlumniManagement />} />
                     <Route path="/portofolio-alumni" element={<PortofolioAlumniManagement />} />
                     <Route path="/settings" element={<Settings />} />
+                    <Route path="/activity-logs" element={<ActivityLog />} />
                     <Route path="/" element={<Navigate to="/dashboard" replace />} />
                 </Route>
             </Routes>

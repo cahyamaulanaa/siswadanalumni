@@ -3,7 +3,20 @@ import { portofolioAlumniService } from '../services/portofolioAlumniService';
 import { siswaService } from '../services/siswaService';
 import { useAuth } from '../hooks/useAuth';
 import api from '../services/api';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faTrash,
+    faPlus,
+    faPen,
+    faXmark,
+    faSearch,
+    faBuilding,
+    faBookOpen,
+    faRotate,
+} from '@fortawesome/free-solid-svg-icons';
 import styles from './SiswaManagement.module.css';
+
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
 export const PortofolioAlumniManagement = () => {
     const { user } = useAuth();
@@ -130,6 +143,14 @@ export const PortofolioAlumniManagement = () => {
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
         if (name === 'gambar_suasana' || name === 'gambar_karya_bebas') {
+            const selectedFile = files[0] || null;
+            if (selectedFile && selectedFile.size > MAX_IMAGE_SIZE) {
+                e.target.value = '';
+                setFormData({ ...formData, [name]: null });
+                setError('Ukuran gambar maksimal 5 MB');
+                return;
+            }
+
             setFormData({ ...formData, [name]: files[0] || null });
             return;
         }
@@ -162,6 +183,14 @@ export const PortofolioAlumniManagement = () => {
 
             if (!formData.alumni_id) {
                 setError('Pilih nama alumni terlebih dahulu');
+                setLoading(false);
+                return;
+            }
+
+            const oversizedFile = [formData.gambar_suasana, formData.gambar_karya_bebas]
+                .find((file) => file && file.size > MAX_IMAGE_SIZE);
+            if (oversizedFile) {
+                setError('Ukuran gambar maksimal 5 MB');
                 setLoading(false);
                 return;
             }
@@ -298,7 +327,7 @@ export const PortofolioAlumniManagement = () => {
     return (
         <div className={styles.container}>
             <div className={styles.content}>
-                <div className={styles.header}>
+                    <div className={styles.header}>
                     <div>
                         <h1 className={styles.title}>Portofolio Alumni</h1>
                         <p style={{ color: '#666', margin: '0.5rem 0 0 0' }}>
@@ -312,12 +341,12 @@ export const PortofolioAlumniManagement = () => {
                                 className={styles.deleteButton}
                                 style={{ background: 'linear-gradient(135deg, rgb(239 68 68) 0%, rgb(220 38 38) 100%)', color: 'white', border: 'none', padding: '0.75rem 1.5rem', borderRadius: '0.75rem', fontWeight: 600, fontSize: '1rem', cursor: 'pointer' }}
                             >
-                                🗑️ Hapus {selectedIds.length}
+                                <FontAwesomeIcon icon={faTrash} /> Hapus {selectedIds.length}
                             </button>
                         )}
                         {canWrite && (
                             <button className={styles.addButton} onClick={() => { resetForm(); setEditingId(null); setShowModal(true); }}>
-                                ➕ Tambah Portofolio
+                                <FontAwesomeIcon icon={faPlus} /> Tambah Portofolio
                             </button>
                         )}
                     </div>
@@ -325,7 +354,7 @@ export const PortofolioAlumniManagement = () => {
 
                 <div className={styles.filterRow} style={{ display: 'grid', gridTemplateColumns: '1fr 220px 220px auto', gap: '1rem', marginBottom: '1rem', alignItems: 'end' }}>
                     <div className={styles.formGroup} style={{ marginBottom: 0 }}>
-                        <label className={styles.label}>Cari Nama Alumni</label>
+                        <label className={styles.label}><FontAwesomeIcon icon={faSearch} /> Cari Nama Alumni</label>
                         <input
                             type="text"
                             name="nama_lengkap"
@@ -336,7 +365,7 @@ export const PortofolioAlumniManagement = () => {
                         />
                     </div>
                     <div className={styles.formGroup} style={{ marginBottom: 0 }}>
-                        <label className={styles.label}>Filter Cabang</label>
+                        <label className={styles.label}><FontAwesomeIcon icon={faBuilding} /> Filter Cabang</label>
                         <select
                             name="cabang_id"
                             value={filters.cabang_id}
@@ -352,7 +381,7 @@ export const PortofolioAlumniManagement = () => {
                         </select>
                     </div>
                     <div className={styles.formGroup} style={{ marginBottom: 0 }}>
-                        <label className={styles.label}>Filter Program</label>
+                        <label className={styles.label}><FontAwesomeIcon icon={faBookOpen} /> Filter Program</label>
                         <select
                             name="program_id"
                             value={filters.program_id}
@@ -368,7 +397,13 @@ export const PortofolioAlumniManagement = () => {
                         </select>
                     </div>
                     <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
-                        <button type="button" className={styles.secondaryButton} onClick={resetFilters}>
+                        <button
+                            type="button"
+                            className={styles.secondaryButton}
+                            onClick={resetFilters}
+                            style={{ background: 'linear-gradient(135deg, rgb(37 99 235) 0%, rgb(59 130 246) 100%)', color: 'white', border: 'none' }}
+                        >
+                            <FontAwesomeIcon icon={faRotate} />
                             Reset Filter
                         </button>
                     </div>
@@ -463,14 +498,14 @@ export const PortofolioAlumniManagement = () => {
                                                                     title="Edit portofolio"
                                                                     style={{ background: 'rgba(59, 130, 246, 0.2)', color: 'rgb(59, 130, 246)', border: 'none', padding: '0.4rem 0.5rem', borderRadius: '0.5rem', cursor: 'pointer' }}
                                                                 >
-                                                                    ✏️
+                                                                    <FontAwesomeIcon icon={faPen} />
                                                                 </button>
                                                                 <button
                                                                     onClick={() => handleDelete(item.id)}
                                                                     title="Hapus portofolio"
                                                                     style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'rgb(239, 68, 68)', border: 'none', padding: '0.4rem 0.5rem', borderRadius: '0.5rem', cursor: 'pointer' }}
                                                                 >
-                                                                    🗑️
+                                                                    <FontAwesomeIcon icon={faTrash} />
                                                                 </button>
                                                             </>
                                                         )}
@@ -526,12 +561,16 @@ export const PortofolioAlumniManagement = () => {
                 </div>
 
                 {showModal && (
-                    <div className={styles.modalOverlay}>
-                        <div className={styles.modalContent}>
-                            <div className={styles.modalHeader}>
-                                <h2 className={styles.modalTitle}>{editingId ? 'Edit Portofolio Alumni' : 'Tambah Portofolio Alumni'}</h2>
+                    <div className={`${styles.modalOverlay} ${styles.portfolioModalOverlay}`}>
+                        <div className={`${styles.modalContent} ${styles.portfolioModalContent}`}>
+                            <div className={`${styles.modalHeader} ${styles.portfolioModalHeader}`}>
+                                <div>
+                                    <p className={styles.portfolioModalEyebrow}>PORTOFOLIO ALUMNI</p>
+                                    <h2 className={styles.modalTitle}>{editingId ? 'Edit Portofolio Alumni' : 'Tambah Portofolio Alumni'}</h2>
+                                    <p className={styles.portfolioModalSubtitle}>Simpan momen dan karya terbaik alumni.</p>
+                                </div>
                                 <button className={styles.modalCloseBtn} onClick={() => { setShowModal(false); setEditingId(null); resetForm(); }}>
-                                    ✕
+                                    <FontAwesomeIcon icon={faXmark} />
                                 </button>
                             </div>
                             <div className={styles.modalScroll}>
@@ -539,7 +578,7 @@ export const PortofolioAlumniManagement = () => {
                                     {error && (
                                         <div className={styles.errorAlert}>{error}</div>
                                     )}
-                                    <div className={styles.formGroup}>
+                                    <div className={`${styles.formGroup} ${styles.portfolioField}`}>
                                         <label className={styles.label}>Nama Alumni</label>
                                         <select name="alumni_id" value={formData.alumni_id} onChange={handleInputChange} className={styles.input} required>
                                             <option value="">Pilih Nama Alumni</option>
@@ -550,7 +589,7 @@ export const PortofolioAlumniManagement = () => {
                                             ))}
                                         </select>
                                     </div>
-                                    <div className={styles.formGroup}>
+                                    <div className={`${styles.formGroup} ${styles.portfolioField}`}>
                                         <label className={styles.label}>Cabang</label>
                                         <input
                                             type="text"
@@ -561,7 +600,7 @@ export const PortofolioAlumniManagement = () => {
                                             style={{ backgroundColor: '#f5f7fb', cursor: 'not-allowed' }}
                                         />
                                     </div>
-                                    <div className={styles.formGroup}>
+                                    <div className={`${styles.formGroup} ${styles.portfolioField}`}>
                                         <label className={styles.label}>Program</label>
                                         <input
                                             type="text"
@@ -572,7 +611,7 @@ export const PortofolioAlumniManagement = () => {
                                             style={{ backgroundColor: '#f5f7fb', cursor: 'not-allowed' }}
                                         />
                                     </div>
-                                    <div className={styles.formGroup}>
+                                    <div className={`${styles.formGroup} ${styles.portfolioField} ${styles.uploadField}`}>
                                         <label className={styles.label}>Gambar Suasana</label>
                                         <input
                                             ref={fileInputRef}
@@ -582,9 +621,9 @@ export const PortofolioAlumniManagement = () => {
                                             onChange={handleInputChange}
                                             className={styles.input}
                                         />
-                                        <small style={{ color: '#555' }}>Maks 20 MB</small>
+                                        <small className={styles.uploadHint}>JPG, PNG, WEBP atau GIF. Maks 5 MB.</small>
                                     </div>
-                                    <div className={styles.formGroup}>
+                                    <div className={`${styles.formGroup} ${styles.portfolioField} ${styles.uploadField}`}>
                                         <label className={styles.label}>Gambar Karya Bebas</label>
                                         <input
                                             type="file"
@@ -593,14 +632,14 @@ export const PortofolioAlumniManagement = () => {
                                             onChange={handleInputChange}
                                             className={styles.input}
                                         />
-                                        <small style={{ color: '#555' }}>Maks 20 MB</small>
+                                        <small className={styles.uploadHint}>JPG, PNG, WEBP atau GIF. Maks 5 MB.</small>
                                     </div>
-                                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>
-                                        <button type="button" className={styles.secondaryButton} onClick={() => { setShowModal(false); setEditingId(null); resetForm(); }}>
+                                    <div className={styles.portfolioModalActions}>
+                                        <button type="button" className={styles.portfolioCancelButton} onClick={() => { setShowModal(false); setEditingId(null); resetForm(); }}>
                                             Batal
                                         </button>
-                                        <button type="submit" className={styles.addButton} disabled={loading}>
-                                            {editingId ? 'Simpan Perubahan' : 'Simpan'}
+                                        <button type="submit" className={styles.portfolioSubmitButton} disabled={loading}>
+                                            <FontAwesomeIcon icon={faPlus} /> {editingId ? 'Simpan Perubahan' : 'Simpan Portofolio'}
                                         </button>
                                     </div>
                                 </form>

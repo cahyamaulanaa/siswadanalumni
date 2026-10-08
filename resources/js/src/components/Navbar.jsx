@@ -1,6 +1,8 @@
 import React from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import styles from './Navbar.module.css';
 
 export const Navbar = () => {
@@ -16,10 +18,10 @@ export const Navbar = () => {
         <nav className={styles.navbar}>
             <div className={styles.navContainer}>
                 <div className={styles.navBrand}>
-                    <span className={styles.brandIcon}>🎓</span>
+                    {/* <span className={styles.brandIcon}>🎓</span> */}
                     <div className={styles.brandText}>
-                        <p className={styles.brandName}>SISA Admin</p>
-                        <p className={styles.brandSubtitle}>Management System</p>
+                        {/* <p className={styles.brandName}>SISA Admin</p> */}
+                        {/* <p className={styles.brandSubtitle}>Management System</p> */}
                     </div>
                 </div>
 
@@ -37,7 +39,7 @@ export const Navbar = () => {
                         className={styles.logoutBtn}
                         title="Logout"
                     >
-                        🚪
+                        <FontAwesomeIcon icon={faRightFromBracket} />
                     </button>
                 </div>
             </div>

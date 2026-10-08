@@ -2,6 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { alumniService } from '../services/alumniService';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faChartPie,
+    faUserGraduate,
+    faGraduationCap,
+    faImages,
+    faGear,
+    faChevronLeft,
+    faChevronRight,
+    faUser,
+    faListCheck,
+} from '@fortawesome/free-solid-svg-icons';
 import styles from './Sidebar.module.css';
 
 export const Sidebar = () => {
@@ -58,31 +70,36 @@ export const Sidebar = () => {
 
     const menuItems = [
         {
-            icon: '📊',
+            icon: faChartPie,
             label: 'Dashboard',
             path: '/dashboard',
         },
         {
-            icon: '👨‍🎓',
+            icon: faUserGraduate,
             label: 'Manajemen Siswa',
             path: '/siswa',
         },
         {
-            icon: '📚',
+            icon: faGraduationCap,
             label: 'Alumni',
             path: '/alumni',
         },
         {
-            icon: '🖼️',
+            icon: faImages,
             label: 'Portofolio Alumni',
             path: '/portofolio-alumni',
         },
         ...(user?.role === 'super_admin'
             ? [
                 {
-                    icon: '⚙️',
+                    icon: faGear,
                     label: 'Pengaturan',
                     path: '/settings',
+                },
+                {
+                    icon: faListCheck,
+                    label: 'Log Activity',
+                    path: '/activity-logs',
                 },
             ]
             : []),
@@ -111,14 +128,14 @@ export const Sidebar = () => {
                     <span className={styles.logoIcon}>
                         <img src="/logo-villa-merah.png.png" alt="Logo Bimbel Gambar Villa Merah" />
                     </span>
-                    {isExpanded && <span className={styles.logoText}>SISA</span>}
+                    {isExpanded && <span className={styles.logoText}></span>}
                 </div>
                 <button
                     className={styles.toggleBtn}
                     onClick={() => setIsExpanded(!isExpanded)}
                     title={isExpanded ? 'Collapse' : 'Expand'}
                 >
-                    {isExpanded ? '◀' : '▶'}
+                    <FontAwesomeIcon icon={isExpanded ? faChevronLeft : faChevronRight} />
                 </button>
             </div>
 
@@ -132,7 +149,9 @@ export const Sidebar = () => {
                                 onClick={() => handleNavigate(item.path)}
                                 title={!isExpanded ? item.label : ''}
                             >
-                                <span className={styles.menuIcon}>{item.icon}</span>
+                                <span className={styles.menuIcon}>
+                                    <FontAwesomeIcon icon={item.icon} />
+                                </span>
                                 {isExpanded && (
                                     <>
                                         <span className={styles.menuLabel}>{item.label}</span>
@@ -159,7 +178,9 @@ export const Sidebar = () => {
             {/* Sidebar Footer */}
             <div className={styles.sidebarFooter}>
                 <div className={styles.footerContent}>
-                    <div className={styles.userAvatar}>👤</div>
+                    <div className={styles.userAvatar}>
+                        <FontAwesomeIcon icon={faUser} />
+                    </div>
                     {isExpanded && (
                         <div className={styles.userInfo}>
                             <p className={styles.userName}>{user?.nama || 'Pengguna'}</p>

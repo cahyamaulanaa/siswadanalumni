@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -37,6 +38,16 @@ class AuthController extends Controller
         // Create token
         $token = $user->createToken('sisa-token')->plainTextToken;
 
+        ActivityLog::create([
+            'user_id' => $user->id,
+            'action' => 'LOGIN',
+            'method' => 'POST',
+            'route' => 'auth.login',
+            'description' => 'Login berhasil',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
         return response()->json([
             'success' => true,
             'message' => 'Login berhasil',
@@ -56,6 +67,16 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        ActivityLog::create([
+            'user_id' => $request->user()->id,
+            'action' => 'LOGOUT',
+            'method' => 'POST',
+            'route' => 'auth.logout',
+            'description' => 'Logout berhasil',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
